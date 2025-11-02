@@ -3,7 +3,7 @@ package com.cineplusapp.cineplusspaapp.ui.profile
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
-import com.cineplusapp.cineplusspaapp.data.repository.UserRepository
+import com.cineplusapp.cineplusspaapp.repository.UserRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch

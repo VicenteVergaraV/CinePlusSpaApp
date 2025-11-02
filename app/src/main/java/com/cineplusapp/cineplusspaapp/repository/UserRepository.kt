@@ -1,4 +1,4 @@
-package com.cineplusapp.cineplusspaapp.data.repository
+package com.cineplusapp.cineplusspaapp.repository
 
 import android.content.Context
 import com.cineplusapp.cineplusspaapp.data.remote.ApiService
