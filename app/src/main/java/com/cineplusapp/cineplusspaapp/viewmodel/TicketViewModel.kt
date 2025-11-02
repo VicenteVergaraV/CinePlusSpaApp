@@ -5,6 +5,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.cineplusapp.cineplusspaapp.data.local.entity.Ticket
 import com.cineplusapp.cineplusspaapp.repository.TicketRepository
+import com.cineplusapp.cineplusspaapp.utils.PdfGenerator
+import com.cineplusapp.cineplusspaapp.utils.NotificationUtils
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.launch
@@ -38,7 +40,7 @@ class TicketViewModel @Inject constructor(
 
             pdfGenerator.generateTicketPdf(context, newTicket)
 
-            notificationUtils.sendPurchaseNotification(context, newTicket)
+            notification.sendPurchaseNotification(context, newTicket)
         }
     }
 }

@@ -1,74 +1,106 @@
 package com.cineplusapp.cineplusspaapp.ui.navigation
 
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Button
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
+import com.cineplusapp.cineplusspaapp.ui.profile.EditProfileScreen
 import com.cineplusapp.cineplusspaapp.ui.profile.ProfileScreen
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.Column
-import androidx.compose.ui.Alignment
+import com.cineplusapp.cineplusspaapp.ui.screens.CarteleraScreen
+import com.cineplusapp.cineplusspaapp.ui.screens.HomeScreen
+import com.cineplusapp.cineplusspaapp.ui.screens.LoginScreen
+import com.cineplusapp.cineplusspaapp.ui.screens.MovieDetailScreen
+import com.cineplusapp.cineplusspaapp.ui.screens.ProductDetailScreen
+import com.cineplusapp.cineplusspaapp.ui.screens.ProductStoreScreen
+import com.cineplusapp.cineplusspaapp.ui.screens.RegisterScreen
+import com.cineplusapp.cineplusspaapp.ui.screens.UserDetailScreen
+import com.cineplusapp.cineplusspaapp.ui.screens.UsersScreen
 
-/**
- * Define las rutas de navegación de la aplicación.
- */
 object Routes {
+    const val LOGIN = "login"
+    const val REGISTER = "register"
+    const val HOME = "home"
+    const val USERS = "users"
+    const val USER_DETAIL = "user_detail/{id}"
     const val PROFILE = "profile"
-    const val HOME = "home" // Añadimos una ruta inicial de ejemplo
+    const val EDIT_PROFILE = "edit_profile"
+
+    const val CARTELERA = "cartelera"
+
+    const val MOVIE_DETAIL = "movie_detail/{id}"
+    const val STORE = "store"
+
+    const val PRODUCT_DETAIL = "product_detail/{id}"
 }
 
 @Composable
 fun AppNavigation() {
-    // Inicializa el controlador de navegación para todo el grafo
     val navController = rememberNavController()
 
-    // NavHost define el contenedor de navegación y las pantallas (composables)
-    NavHost(
-        navController = navController,
-        startDestination = Routes.HOME // Define la pantalla que se muestra al inicio
-    ) {
-        // 1. Ruta de la pantalla de Perfil
-        composable(Routes.PROFILE) {
-            ProfileScreen()
-        }
+    NavHost(navController = navController, startDestination = Routes.LOGIN) {
 
-        // 2. Ruta de la pantalla Home (Ejemplo para tener una pantalla inicial)
-        composable(Routes.HOME) {
-            // Ejemplo de una pantalla simple con el botón de navegación
-            HomePlaceholderScreen(
-                onNavigateToProfile = {
-                    navController.navigate(Routes.PROFILE)
-                }
+        composable(Routes.LOGIN) {
+            LoginScreen(
+                onLoginSuccess = { navController.navigate(Routes.HOME) { popUpTo(Routes.LOGIN) { inclusive = true } } },
+                onGoRegister = { navController.navigate(Routes.REGISTER) }
             )
         }
 
-        // Aquí podrías añadir más rutas (ej: composable(Routes.MOVIES) { ... })
-    }
-}
-
-/**
- * Pantalla de ejemplo que contiene el botón de navegación.
- */
-@Composable
-fun HomePlaceholderScreen(
-    onNavigateToProfile: () -> Unit
-) {
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(20.dp),
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        Text("Bienvenido a CinePlus App", Modifier.padding(bottom = 32.dp))
-
-        // El botón para navegar a la pantalla de Perfil
-        Button(onClick = onNavigateToProfile) {
-            Text("Ver Perfil")
+        composable(Routes.REGISTER) {
+            RegisterScreen(onRegistered = { navController.navigate(Routes.LOGIN) { popUpTo(Routes.LOGIN) { inclusive = true } } })
         }
+
+        composable(Routes.HOME) {
+            HomeScreen(
+                onGoUsers = { navController.navigate(Routes.USERS) },
+                onGoProfile = { navController.navigate(Routes.PROFILE) },
+                onGoCartelera = { navController.navigate(Routes.CARTELERA) },
+                onGoStore = { navController.navigate(Routes.STORE) }
+            )
+        }
+
+        composable(Routes.USERS) {
+            UsersScreen(
+                onClickUser = { id -> navController.navigate("user_detail/$id") }
+            )
+        }
+
+        composable(
+            route = Routes.USER_DETAIL,
+            arguments = listOf(navArgument("id") { type = NavType.IntType })
+        ) { backStack ->
+            val userId = backStack.arguments?.getInt("id") ?: 0
+            UserDetailScreen(userId = userId, onBack = { navController.popBackStack() })
+        }
+
+        composable(Routes.PROFILE) {
+            ProfileScreen(
+                onEdit = { navController.navigate(Routes.EDIT_PROFILE) },
+                onBack = { navController.popBackStack() }
+            )
+        }
+
+        composable(Routes.EDIT_PROFILE) {
+            EditProfileScreen(onSaved = { navController.popBackStack() })
+        }
+
+        composable(Routes.CARTELERA) {
+            CarteleraScreen(onMovieClick = { id -> navController.navigate("movie_detail/$id") })
+        }
+        composable("movie_detail/{id}", arguments = listOf(navArgument("id"){ type = NavType.IntType })) { back ->
+            val id = back.arguments?.getInt("id") ?: 0
+            MovieDetailScreen(movieId = id, onBack = { navController.popBackStack() })
+        }
+
+        composable(Routes.STORE) {
+            ProductStoreScreen(onProductClick = { id -> navController.navigate("product_detail/$id") })
+        }
+        composable("product_detail/{id}", arguments = listOf(navArgument("id"){ type = NavType.IntType })) { back ->
+            val id = back.arguments?.getInt("id") ?: 0
+            ProductDetailScreen(productId = id, onBack = { navController.popBackStack() })
+        }
+
     }
 }

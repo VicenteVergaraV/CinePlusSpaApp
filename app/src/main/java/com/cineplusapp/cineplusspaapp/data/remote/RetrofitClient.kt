@@ -9,7 +9,7 @@ import retrofit2.Retrofit
 import java.util.concurrent.TimeUnit
 
 object RetrofitClient {
-    private const val BASE_URL = "https://dummyjson.com/"
+    private const val BASE_URL = "http://10.0.2.2:3000/"
 
 
     fun create(context: Context): Retrofit {

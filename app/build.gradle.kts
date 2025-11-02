@@ -1,5 +1,6 @@
 plugins {
-    id("com.google.dagger.hilt.android")
+    id("com.google.dagger.hilt.android")  // Hilt
+    id("org.jetbrains.kotlin.kapt")
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
@@ -30,6 +31,14 @@ android {
             )
         }
     }
+
+    packaging {
+        resources {
+            excludes += "/META-INF/{AL2.0,LGPL2.1}"
+            excludes += "META-INF/gradle/incremental.annotation.processors"
+        }
+    }
+
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
@@ -64,8 +73,9 @@ dependencies {
 
 
     //Hilt
-    implementation("com.google.dagger:hilt-android:2.57.1")
-    implementation("com.google.dagger:hilt-android-compiler:2.57.1")
+    implementation("com.google.dagger:hilt-android:2.52")
+    kapt("com.google.dagger:hilt-compiler:2.52")
+    implementation("androidx.hilt:hilt-navigation-compose:1.2.0")
 
     //Room
     val room_version = "2.8.3"
@@ -73,8 +83,8 @@ dependencies {
     implementation("androidx.room:room-runtime:$room_version")
 
     // If this project only uses Java source, use the Java annotationProcessor
-    // No additional plugins are necessary
-    annotationProcessor("androidx.room:room-compiler:$room_version")
+    // No additional plugins are necessarykapt
+    kapt("androidx.room:room-compiler:$room_version")
 
     // optional - Kotlin Extensions and Coroutines support for Room
     implementation("androidx.room:room-ktx:$room_version")
@@ -116,4 +126,13 @@ dependencies {
 
     // Coil - Carga de Imagenes desde URLs
     implementation("io.coil-kt:coil-compose:2.6.0")
+}
+
+kapt {
+    correctErrorTypes = true
+    arguments {
+        arg("room.schemaLocation", "$projectDir/schemas")
+        arg("room.incremental", "true")
+        arg("room.expandProjection", "true")
+    }
 }

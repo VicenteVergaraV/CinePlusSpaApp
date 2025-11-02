@@ -23,43 +23,41 @@ class NotificationUtils @Inject constructor() {
         const val NOTIFICATION_ID_BASE = 100
     }
 
-    // Función que debe llamarse al inicio de la aplicación (e.g., en AppDependencies.kt)
-    fun createNotificationChannel(context: Context) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            val importance = NotificationManager.IMPORTANCE_HIGH
-            val channel = NotificationChannel(CHANNEL_ID, CHANNEL_NAME, importance).apply {
-                description = "Notificaciones para confirmar y recordar funciones de cine."
-            }
-            val notificationManager: NotificationManager =
-                context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-            notificationManager.createNotificationChannel(channel)
-        }
-    }
-
     fun sendPurchaseNotification(context: Context, ticket: Ticket) {
-        // Verificar permiso de POST_NOTIFICATIONS para API 33+
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU &&
-            ActivityCompat.checkSelfPermission(context, Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
-            // En un entorno Compose, esto debe solicitar el permiso. Aquí solo logeamos.
-            return
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            val granted = ActivityCompat.checkSelfPermission(
+                context, Manifest.permission.POST_NOTIFICATIONS
+            ) == PackageManager.PERMISSION_GRANTED
+            if (!granted) return
         }
 
-        val timeFormat = SimpleDateFormat("HH:mm", Locale.getDefault())
-        val showtimeString = timeFormat.format(Date(ticket.showtime))
+        val showtimeString = SimpleDateFormat("dd/MM HH:mm", Locale.getDefault())
+            .format(Date(ticket.showtime))
 
         val builder = NotificationCompat.Builder(context, CHANNEL_ID)
-            .setSmallIcon(android.R.drawable.ic_menu_today) // Ícono genérico
+            .setSmallIcon(android.R.drawable.ic_menu_today)
             .setContentTitle("¡Compra Exitosa!")
             .setContentText("Tu entrada para '${ticket.movieTitle}' a las $showtimeString ha sido confirmada.")
-            .setStyle(NotificationCompat.BigTextStyle()
-                .bigText("Detalles: ${ticket.movieTitle} | Hora: $showtimeString | Asientos: ${ticket.seats} | Total: $${String.format("%.2f", ticket.totalAmount)}")
+            .setStyle(
+                NotificationCompat.BigTextStyle().bigText(
+                    "Detalles: ${ticket.movieTitle} | Hora: $showtimeString | Asientos: ${ticket.seats} | Total: $${String.format("%.2f", ticket.totalAmount)}"
+                )
             )
             .setPriority(NotificationCompat.PRIORITY_HIGH)
             .setAutoCancel(true)
 
-        with(NotificationManagerCompat.from(context)) {
-            // notificationId debe ser único para cada ticket
-            notify(NOTIFICATION_ID_BASE + ticket.id, builder.build())
+        NotificationManagerCompat.from(context)
+            .notify(NOTIFICATION_ID_BASE + ticket.id, builder.build())
+    }
+
+
+    fun createNotificationChannel(context: Context) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            val channel = NotificationChannel(
+                CHANNEL_ID, CHANNEL_NAME, NotificationManager.IMPORTANCE_HIGH
+            )
+            val manager = context.getSystemService(NotificationManager::class.java)
+            manager.createNotificationChannel(channel)
         }
     }
 }
