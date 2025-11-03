@@ -4,28 +4,37 @@ import com.cineplusapp.cineplusspaapp.data.local.SessionManager
 import kotlinx.coroutines.runBlocking
 import okhttp3.Interceptor
 import okhttp3.Response
+import javax.inject.Inject
+import javax.inject.Singleton
 
-class AuthInterceptor(
+@Singleton
+class AuthInterceptor @Inject constructor(
     private val sessionManager: SessionManager
 ) : Interceptor {
+
     override fun intercept(chain: Interceptor.Chain): Response {
-        val originalRequest = chain.request()
+        val original = chain.request()
 
-        // Recuperacion del token de SessionManager
-        val token = runBlocking {
-            sessionManager.getAuthToken()
+        // Si ya trae Authorization, no tocar
+        if (original.header("Authorization") != null) {
+            return chain.proceed(original)
         }
 
-        // En el caso de no haber token, continuar con la peticion original
-        if (token.isNullOrEmpty()) {
-            return chain.proceed(originalRequest)
+        // Evitar login/refresh
+        val path = original.url.encodedPath
+        if (path.endsWith("/user/login") || path.endsWith("/auth/refresh")) {
+            return chain.proceed(original)
         }
 
-        // Creacion de una nueva peticion con el token
-        val authenticatedRequest = originalRequest.newBuilder()
+        val token = runBlocking { sessionManager.getAuthToken() }
+        if (token.isNullOrBlank()) {
+            return chain.proceed(original)
+        }
+
+        val authed = original.newBuilder()
             .header("Authorization", "Bearer $token")
             .build()
 
-        return chain.proceed(authenticatedRequest)
+        return chain.proceed(authed)
     }
 }

@@ -2,6 +2,8 @@ package com.cineplusapp.cineplusspaapp.data.di
 
 import android.content.Context // Importación correcta del Context de Android
 import androidx.room.Room
+import com.cineplusapp.cineplusspaapp.data.local.dao.CartItemDao
+import com.cineplusapp.cineplusspaapp.data.local.dao.FavoriteMovieDao
 import com.cineplusapp.cineplusspaapp.data.local.dao.MovieDao
 import com.cineplusapp.cineplusspaapp.data.local.dao.ProductDao
 import com.cineplusapp.cineplusspaapp.data.local.dao.TicketDao
@@ -12,7 +14,6 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
-// Se eliminó: import org.openjdk.tools.javac.util.Context (Esto causaba un error de compilación)
 import javax.inject.Singleton
 
 @Module
@@ -59,5 +60,16 @@ object DatabaseModule {
     @Provides
     fun provideProductDao(appDatabase: AppDatabase): ProductDao {
         return appDatabase.productDao()
+    }
+
+    /* Dao del Carrito y la pelicula favorita*/
+    @Provides
+    fun provideCartItemDao(appDatabase: AppDatabase): CartItemDao {
+        return appDatabase.cartItemDao()
+    }
+
+    @Provides
+    fun provideFavoriteMovieDao(appDatabase: AppDatabase): FavoriteMovieDao {
+        return appDatabase.favoriteMovieDao()
     }
 }

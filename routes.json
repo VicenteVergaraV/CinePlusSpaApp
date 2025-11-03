@@ -1,0 +1,5 @@
+{
+  "/user/login": "/__login",
+  "/user/me": "/__me",
+  "/auth/refresh": "/__refresh"
+}

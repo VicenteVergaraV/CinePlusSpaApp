@@ -48,6 +48,7 @@ android {
     }
     buildFeatures {
         compose = true
+        buildConfig = true
     }
 }
 
@@ -60,6 +61,9 @@ dependencies {
     implementation(libs.androidx.compose.ui.graphics)
     implementation(libs.androidx.compose.ui.tooling.preview)
     implementation(libs.androidx.compose.material3)
+    implementation(libs.androidx.hilt.common)
+    implementation(libs.androidx.work.runtime.ktx)
+    implementation(libs.androidx.hilt.work)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
@@ -71,11 +75,18 @@ dependencies {
     // NETWORKING - API REST
     // ============================
 
+    // GPS
+    implementation("com.google.android.gms:play-services-location:21.3.0")
+
+    //Work-runtime
+    implementation("androidx.work:work-runtime-ktx:2.9.1")
 
     //Hilt
     implementation("com.google.dagger:hilt-android:2.52")
+    kapt("androidx.hilt:hilt-compiler:1.2.0")
     kapt("com.google.dagger:hilt-compiler:2.52")
     implementation("androidx.hilt:hilt-navigation-compose:1.2.0")
+    implementation("androidx.hilt:hilt-work:1.2.0")
 
     //Room
     val room_version = "2.8.3"

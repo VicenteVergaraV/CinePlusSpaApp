@@ -1,11 +1,7 @@
 package com.cineplusapp.cineplusspaapp.ui.screens
 
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Button
-import androidx.compose.material3.Text
+import androidx.compose.foundation.layout.*
+import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -16,31 +12,37 @@ fun HomeScreen(
     onGoUsers: () -> Unit,
     onGoProfile: () -> Unit,
     onGoCartelera: () -> Unit,
-    onGoStore: () -> Unit
+    onGoStore: () -> Unit,
+    onGoNearby: () -> Unit,           // ← tipo correcto
+    onLogout: (() -> Unit)? = null
 ) {
     Column(
-        modifier = Modifier.fillMaxSize().padding(20.dp),
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(20.dp),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Text("Bienvenido a CinePlus App")
-        Button(
-            onClick = onGoUsers,
-            modifier = Modifier.padding(top = 16.dp)
-        ) { Text("Ver Usuarios") }
+        Spacer(Modifier.height(12.dp))
 
-        Button(
-            onClick = onGoProfile,
-            modifier = Modifier.padding(top = 8.dp)
-        ) { Text("Mi Perfil") }
+        Button(onClick = onGoUsers) { Text("Ver Usuarios") }
+        Spacer(Modifier.height(8.dp))
 
-        Button(onClick = onGoCartelera, modifier = Modifier.padding(top = 8.dp)) {
-            Text("Cartelera")
-        }
+        Button(onClick = onGoProfile) { Text("Mi Perfil") }
+        Spacer(Modifier.height(8.dp))
 
-        Button(onClick = onGoStore,
-            modifier = Modifier.padding(top = 8.dp)) {
-            Text("Tienda")
+        Button(onClick = onGoCartelera) { Text("Cartelera") }
+        Spacer(Modifier.height(8.dp))
+
+        Button(onClick = onGoStore) { Text("Tienda") }
+        Spacer(Modifier.height(8.dp))
+
+        Button(onClick = onGoNearby) { Text("Cines cercanos (GPS)") }  // ← botón Nearby
+        Spacer(Modifier.height(16.dp))
+
+        if (onLogout != null) {
+            OutlinedButton(onClick = onLogout) { Text("Cerrar sesión") }
         }
     }
 }

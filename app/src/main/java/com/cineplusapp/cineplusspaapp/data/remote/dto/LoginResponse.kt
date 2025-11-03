@@ -19,7 +19,7 @@ data class LoginResponse(
     val lastName: String,
 
     @SerializedName("accessToken")
-    val accesToken: String,
+    val accessToken: String,
 
     @SerializedName("refreshToken")
     val refreshToken: String?

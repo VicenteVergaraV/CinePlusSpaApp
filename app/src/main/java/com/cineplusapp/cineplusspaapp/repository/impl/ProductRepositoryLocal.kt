@@ -1,37 +1,51 @@
+// repository/impl/ProductRepositoryLocal.kt
 package com.cineplusapp.cineplusspaapp.repository.impl
 
-import com.cineplusapp.cineplusspaapp.data.local.dao.ProductDao
-import com.cineplusapp.cineplusspaapp.data.mapper.toDomain
-import com.cineplusapp.cineplusspaapp.data.mapper.toEntity
 import com.cineplusapp.cineplusspaapp.data.model.Product
 import com.cineplusapp.cineplusspaapp.data.model.ProductType
 import com.cineplusapp.cineplusspaapp.repository.ProductRepository
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.map
 import javax.inject.Inject
+import javax.inject.Singleton
 
-class ProductRepositoryLocal @Inject constructor(
-    private val dao: ProductDao
-) : ProductRepository {
+@Singleton
+class ProductRepositoryLocal @Inject constructor() : ProductRepository {
 
-    override fun list(type: ProductType?): Flow<List<Product>> =
-        when (type) {
-            null -> dao.observeAll().map { it.map { e -> e.toDomain() } }
-            else -> dao.observeByType(type.name.lowercase()).map { it.map { e -> e.toDomain() } }
-        }
+    // Product(id, name, description, imageUrl: String?, price: Double, type: ProductType)
+    private val store = MutableStateFlow(
+        listOf(
+            Product(
+                id = 1,
+                name = "Pop Corn",
+                description = "Clásico combo",
+                imageUrl = null,
+                price = 5.5,
+                type = ProductType.POPCORN
+            ),
+            Product(
+                id = 2,
+                name = "Bebida 500ml",
+                description = "Gaseosa",
+                imageUrl = null,
+                price = 2.3,
+                type = ProductType.DRINK
+            ),
+            Product(
+                id = 3,
+                name = "Polera CinePlus",
+                description = "Talla M",
+                imageUrl = null,
+                price = 12.9,
+                type = ProductType.COMBO   // o crea un tipo específico si quieres
+            )
+        )
+    )
+
+    override fun list(filter: ProductType?): Flow<List<Product>> =
+        if (filter == null) store else store.map { it.filter { p -> p.type == filter } }
 
     override fun byId(id: Int): Flow<Product?> =
-        dao.observeById(id).map { it?.toDomain() }
-
-    override suspend fun seedIfEmpty() {
-        dao.clear()
-        val seed = listOf(
-            Product(1, "Cabritas M", "Clásicas saladas", "https://picsum.photos/300/300?random=21", 3990.0, ProductType.POPCORN),
-            Product(2, "Cabritas L", "Tamaño familiar", "https://picsum.photos/300/300?random=22", 5490.0, ProductType.POPCORN),
-            Product(3, "Bebida 500ml", "Gaseosa a elección", "https://picsum.photos/300/300?random=23", 2490.0, ProductType.DRINK),
-            Product(4, "Agua 500ml", "Sin gas", "https://picsum.photos/300/300?random=24", 1990.0, ProductType.DRINK),
-            Product(5, "Combo Pareja", "2 bebidas + cabritas L", "https://picsum.photos/300/300?random=25", 7990.0, ProductType.COMBO)
-        )
-        dao.upsertAll(seed.map { it.toEntity() })
-    }
+        store.map { it.find { p -> p.id == id } }
 }

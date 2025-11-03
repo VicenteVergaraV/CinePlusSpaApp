@@ -9,19 +9,22 @@ import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface MovieDao {
-
     @Query("SELECT * FROM movies ORDER BY title")
     fun observeAll(): Flow<List<MovieEntity>>
 
-    @Query("SELECT * FROM movies WHERE id = :id")
+    @Query("SELECT * FROM movies WHERE id = :id LIMIT 1")
     fun observeById(id: Int): Flow<MovieEntity?>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun upsertAll(items: List<MovieEntity>)
+    suspend fun insertAll(items: List<MovieEntity>)
 
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun upsert(item: MovieEntity)
+    @Query("SELECT COUNT(*) FROM movies")
+    suspend fun count(): Int
 
-    @Query("DELETE FROM movies")
-    suspend fun clear()
+    @Query("""
+        SELECT * FROM movies 
+        WHERE title LIKE :q OR synopsis LIKE :q 
+        ORDER BY title
+    """)
+    fun observeByQuery(q: String): Flow<List<MovieEntity>>
 }

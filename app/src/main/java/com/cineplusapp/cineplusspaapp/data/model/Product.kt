@@ -5,8 +5,8 @@ enum class ProductType { POPCORN, DRINK, COMBO }
 data class Product(
     val id: Int,
     val name: String,
-    val description: String,
-    val imageUrl: String?,
-    val price: Double,
-    val type: ProductType
+    val description: String = "",
+    val imageUrl: String? = null,
+    val price: Double = 0.0,
+    val type: ProductType = ProductType.COMBO
 )

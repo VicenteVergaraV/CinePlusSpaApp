@@ -1,3 +1,4 @@
+// data/local/entity/MovieEntity.kt
 package com.cineplusapp.cineplusspaapp.data.local.entity
 
 import androidx.room.Entity
@@ -11,6 +12,6 @@ data class MovieEntity(
     val posterUrl: String?,
     val durationMin: Int,
     val rating: String,
-    val genresCsv: String,      // guardamos géneros como CSV
-    val showtimesCsv: String    // guardamos funciones como CSV
+    val genresCsv: String,      // CSV: "accion|aventura|scifi"
+    val showtimesCsv: String    // CSV: "2025-11-04 16:00|2025-11-04 19:00"
 )
