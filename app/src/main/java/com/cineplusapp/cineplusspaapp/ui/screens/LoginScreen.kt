@@ -6,48 +6,54 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
+import com.cineplusapp.cineplusspaapp.viewmodel.LoginViewModel
 
 @Composable
 fun LoginScreen(
-    onLoginSuccess: () -> Unit,
-    onGoRegister: () -> Unit
+    onLoginSuccess: (access: String, refresh: String?) -> Unit, // <-- CAMBIO
+    onGoRegister: () -> Unit,
+    vm: LoginViewModel = hiltViewModel()
 ) {
     var username by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
-    var loading by remember { mutableStateOf(false) }
-    var error by remember { mutableStateOf<String?>(null) }
+    val ui = vm.ui
 
-    Column(Modifier.fillMaxSize().padding(20.dp)) {
+    Column(Modifier.fillMaxSize().padding(15.dp)) {
         Text("Iniciar Sesión", style = MaterialTheme.typography.headlineSmall)
+
         OutlinedTextField(
-            value = username, onValueChange = { username = it },
-            label = { Text("Usuario") }, modifier = Modifier.fillMaxWidth().padding(top = 16.dp)
+            value = username,
+            onValueChange = { username = it },
+            label = { Text("Usuario") },
+            modifier = Modifier.fillMaxWidth().padding(top = 12.dp)
         )
+
         OutlinedTextField(
-            value = password, onValueChange = { password = it },
+            value = password,
+            onValueChange = { password = it },
             label = { Text("Contraseña") },
             visualTransformation = PasswordVisualTransformation(),
-            modifier = Modifier.fillMaxWidth().padding(top = 8.dp)
+            modifier = Modifier.fillMaxWidth().padding(top = 4.dp)
         )
-        if (error != null) {
-            Text(error!!, color = MaterialTheme.colorScheme.error, modifier = Modifier.padding(top = 8.dp))
-        }
+
+        ui.error?.let { Text(it, color = MaterialTheme.colorScheme.error, modifier = Modifier.padding(top = 4.dp)) }
+
         Button(
             onClick = {
-                loading = true
-                // TODO: reemplazar por tu ViewModel con ApiService.login + guardado token
-                // Simulación:
-                error = if (username.isBlank() || password.isBlank()) "Completa usuario y contraseña" else null
-                loading = false
-                if (error == null) onLoginSuccess()
+                if (username.isBlank() || password.isBlank()) {
+                    // feedback local mínimo
+                    return@Button
+                }
+                vm.login(username, password, onLoginSuccess)
             },
-            enabled = !loading,
-            modifier = Modifier.fillMaxWidth().padding(top = 16.dp)
+            enabled = !ui.loading,
+            modifier = Modifier.fillMaxWidth().padding(top = 12.dp)
         ) {
-            Text(if (loading) "Ingresando..." else "Ingresar")
+            Text(if (ui.loading) "Ingresando..." else "Ingresar")
         }
 
-        TextButton(onClick = onGoRegister, modifier = Modifier.padding(top = 8.dp)) {
+        TextButton(onClick = onGoRegister, modifier = Modifier.padding(top = 4.dp)) {
             Text("Crear cuenta")
         }
     }

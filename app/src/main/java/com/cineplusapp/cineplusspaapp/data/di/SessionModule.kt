@@ -13,5 +13,5 @@ import javax.inject.Singleton
 @InstallIn(SingletonComponent::class)
 object SessionModule {
     @Provides @Singleton
-    fun provideSessionManager(@ApplicationContext ctx: Context) = SessionManager(ctx)
+    fun provideSessionManager(@ApplicationContext ctx: Context): SessionManager = SessionManager(ctx)
 }

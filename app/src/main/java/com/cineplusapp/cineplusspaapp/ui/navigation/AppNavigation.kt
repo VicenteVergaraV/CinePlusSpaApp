@@ -3,8 +3,8 @@ package com.cineplusapp.cineplusspaapp.ui.navigation
 
 import androidx.compose.runtime.*
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.navigation.NavHostController
 import androidx.navigation.NavType
+import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
@@ -14,6 +14,10 @@ import com.cineplusapp.cineplusspaapp.ui.profile.EditProfileScreen
 import com.cineplusapp.cineplusspaapp.ui.profile.ProfileScreen
 import com.cineplusapp.cineplusspaapp.ui.screens.*
 import com.cineplusapp.cineplusspaapp.viewmodel.HomeViewModel
+import com.cineplusapp.cineplusspaapp.viewmodel.MovieViewModel
+import com.cineplusapp.cineplusspaapp.viewmodel.ProductDetailViewModel
+import com.cineplusapp.cineplusspaapp.viewmodel.ProductViewModel
+import kotlinx.coroutines.launch
 
 object Routes {
     const val LOGIN = "login"
@@ -33,31 +37,30 @@ object Routes {
 @Composable
 fun AppNavigation(session: SessionManager) {
     val navController: NavHostController = rememberNavController()
-    val token by session.accessTokenFlow.collectAsState(initial = null)
-    val start = Routes.LOGIN
+    val scope = rememberCoroutineScope()
 
-    LaunchedEffect(token) {
-        if (token.isNullOrBlank()) {
-            navController.navigate(Routes.LOGIN) {
-                popUpTo(0) { inclusive = true }
-                launchSingleTop = true
-            }
-        } else if (navController.currentDestination?.route == Routes.LOGIN) {
-            navController.navigate(Routes.HOME) {
-                popUpTo(Routes.LOGIN) { inclusive = true }
-                launchSingleTop = true
-            }
-        }
+    // 👇 única fuente de verdad para el arranque
+    val accessToken: String? by session.accessTokenFlow.collectAsState(initial = null)
+
+    // Aún no carga DataStore → splash
+    if (accessToken == null) {
+        SplashScreen()
+        return
     }
+
+    val start = if (accessToken!!.isBlank()) Routes.LOGIN else Routes.HOME
 
     NavHost(navController = navController, startDestination = start) {
 
         composable(Routes.LOGIN) {
             LoginScreen(
-                onLoginSuccess = {
-                    navController.navigate(Routes.HOME) {
-                        popUpTo(Routes.LOGIN) { inclusive = true }
-                        launchSingleTop = true
+                onLoginSuccess = { access, refresh ->
+                    scope.launch {
+                        session.saveTokens(access, refresh)
+                        navController.navigate(Routes.HOME) {
+                            popUpTo(Routes.LOGIN) { inclusive = true }
+                            launchSingleTop = true
+                        }
                     }
                 },
                 onGoRegister = { navController.navigate(Routes.REGISTER) }
@@ -65,14 +68,7 @@ fun AppNavigation(session: SessionManager) {
         }
 
         composable(Routes.REGISTER) {
-            RegisterScreen(
-                onRegistered = {
-                    navController.navigate(Routes.LOGIN) {
-                        popUpTo(Routes.LOGIN) { inclusive = true }
-                        launchSingleTop = true
-                    }
-                }
-            )
+            RegisterScreen(onRegistered = { navController.popBackStack() })
         }
 
         composable(Routes.HOME) {
@@ -85,6 +81,8 @@ fun AppNavigation(session: SessionManager) {
                 onGoNearby = { navController.navigate(Routes.NEARBY) },
                 onLogout = {
                     vm.logout {
+                        // Asegura limpiar tokens antes de ir a LOGIN
+                        scope.launch { session.clearTokens() }
                         navController.navigate(Routes.LOGIN) {
                             popUpTo(0) { inclusive = true }
                             launchSingleTop = true
@@ -101,9 +99,9 @@ fun AppNavigation(session: SessionManager) {
         composable(
             route = Routes.USER_DETAIL,
             arguments = listOf(navArgument("id") { type = NavType.IntType })
-        ) { backStack ->
-            val userId = backStack.arguments?.getInt("id") ?: 0
-            UserDetailScreen(userId = userId, onBack = { navController.popBackStack() })
+        ) { back ->
+            val id = back.arguments!!.getInt("id")
+            UserDetailScreen(userId = id, onBack = { navController.popBackStack() })
         }
 
         composable(Routes.PROFILE) {
@@ -117,32 +115,55 @@ fun AppNavigation(session: SessionManager) {
             EditProfileScreen(onSaved = { navController.popBackStack() })
         }
 
+        // CARTELERA
         composable(Routes.CARTELERA) {
-            CarteleraScreen(onMovieClick = { id -> navController.navigate("movie_detail/$id") })
+            val vm: MovieViewModel = hiltViewModel()
+            CarteleraScreen(
+                vm = vm,
+                onMovieClick = { id -> navController.navigate("movie_detail/$id") },
+                onBack = { navController.popBackStack() }
+            )
         }
 
         composable(
-            Routes.MOVIE_DETAIL,
+            route = Routes.MOVIE_DETAIL,
             arguments = listOf(navArgument("id") { type = NavType.IntType })
         ) { back ->
-            val id = back.arguments?.getInt("id") ?: 0
-            MovieDetailScreen(movieId = id, onBack = { navController.popBackStack() })
+            val id = back.arguments!!.getInt("id")
+            val vm: MovieViewModel = hiltViewModel()
+            MovieDetailScreen(
+                vm = vm,
+                movieId = id,
+                onBack = { navController.popBackStack() }
+            )
         }
 
+// STORE
         composable(Routes.STORE) {
-            ProductStoreScreen(onProductClick = { id -> navController.navigate("product_detail/$id") })
+            val vm: ProductViewModel = hiltViewModel()
+            ProductStoreScreen(
+                vm = vm,
+                onProductClick = { id -> navController.navigate("product_detail/$id") },
+                onBack = { navController.popBackStack() }
+            )
         }
 
         composable(
-            Routes.PRODUCT_DETAIL,
+            route = Routes.PRODUCT_DETAIL,
             arguments = listOf(navArgument("id") { type = NavType.IntType })
         ) { back ->
-            val id = back.arguments?.getInt("id") ?: 0
-            ProductDetailScreen(productId = id, onBack = { navController.popBackStack() })
+            val id = back.arguments!!.getInt("id")
+            val vm: ProductViewModel = hiltViewModel()
+            ProductDetailScreen(
+                vm = vm,
+                productId = id,
+                onBack = { navController.popBackStack() }
+            )
         }
+
 
         composable(Routes.NEARBY) {
-            NearbyCinemasScreen() // asegúrate de tener este composable creado
+            NearbyCinemasScreen()
         }
     }
 }

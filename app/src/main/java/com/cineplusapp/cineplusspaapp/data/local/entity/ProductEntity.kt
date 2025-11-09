@@ -9,6 +9,6 @@ data class ProductEntity(
     val name: String,
     val description: String,
     val imageUrl: String?,
-    val price: Double,
+    val price: Int,
     val type: String           // "Cabritas" | "Bebestibles" | "Promociones"
 )

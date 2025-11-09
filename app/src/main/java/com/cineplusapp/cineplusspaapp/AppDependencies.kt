@@ -11,8 +11,6 @@ class AppDependencies : Application(), Configuration.Provider {
 
     @Inject lateinit var workerFactory: HiltWorkerFactory
 
-    // NO declares getWorkManagerConfiguration() como función *y* propiedad a la vez.
-    // Implementa SÓLO esta propiedad:
     override val workManagerConfiguration: Configuration
         get() = Configuration.Builder()
             .setWorkerFactory(workerFactory)
@@ -20,7 +18,6 @@ class AppDependencies : Application(), Configuration.Provider {
 
     override fun onCreate() {
         super.onCreate()
-        // Opcional: agenda sync periódico al iniciar la app (si lo quieres global)
         // SyncScheduler.schedulePeriodic(WorkManager.getInstance(this))
     }
 }

@@ -19,9 +19,9 @@ class ProductRepositoryLocal @Inject constructor() : ProductRepository {
             Product(
                 id = 1,
                 name = "Pop Corn",
-                description = "Clásico combo",
+                description = "Combo Clasico",
                 imageUrl = null,
-                price = 5.5,
+                price = 2900,
                 type = ProductType.POPCORN
             ),
             Product(
@@ -29,16 +29,16 @@ class ProductRepositoryLocal @Inject constructor() : ProductRepository {
                 name = "Bebida 500ml",
                 description = "Gaseosa",
                 imageUrl = null,
-                price = 2.3,
+                price = 1500,
                 type = ProductType.DRINK
             ),
             Product(
                 id = 3,
-                name = "Polera CinePlus",
+                name = "Gorra CinePlus",
                 description = "Talla M",
                 imageUrl = null,
-                price = 12.9,
-                type = ProductType.COMBO   // o crea un tipo específico si quieres
+                price = 2000,
+                type = ProductType.COMBO
             )
         )
     )

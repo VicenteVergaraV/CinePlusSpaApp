@@ -22,9 +22,9 @@ fun UsersScreen(onClickUser: (Int) -> Unit) {
     // TODO: reemplazar por ViewModel + ApiService.getUsers() / searchUsers()
     val users = remember {
         listOf(
-            SimpleUser(1, "Ana Pérez", "ana@example.com", "https://i.pravatar.cc/128?img=1"),
-            SimpleUser(2, "Luis Soto", "luis@example.com", "https://i.pravatar.cc/128?img=2"),
-            SimpleUser(3, "Camila Rojas", "camila@example.com", "https://i.pravatar.cc/128?img=3")
+            SimpleUser(1, "Ana Suarez",   "ana@example.com",   "https://api.dicebear.com/7.x/adventurer/png?seed=Ana%20Suarez&size=128"),
+            SimpleUser(2, "Luis Amarillo","luis@example.com",  "https://ui-avatars.com/api/?name=Luis+Amarillo&size=128&background=0D8ABC&color=fff"),
+            SimpleUser(3, "Camila Gonzales","camila@example.com","https://api.dicebear.com/7.x/identicon/png?seed=camila@example.com&size=128")
         )
     }
 

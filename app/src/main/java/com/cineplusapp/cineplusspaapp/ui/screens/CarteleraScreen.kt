@@ -12,7 +12,8 @@ import com.cineplusapp.cineplusspaapp.viewmodel.MovieViewModel
 @Composable
 fun CarteleraScreen(
     onMovieClick: (Int) -> Unit,
-    vm: MovieViewModel = hiltViewModel()
+    vm: MovieViewModel = hiltViewModel(),
+    onBack:() -> Unit
 ) {
     val movies by vm.movies.collectAsState()
     LaunchedEffect(Unit) { vm.seed() }

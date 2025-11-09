@@ -6,6 +6,6 @@ import kotlinx.coroutines.flow.Flow
 data class GeoPoint(val lat: Double, val lon: Double)
 
 interface LocationProvider {
-    /** Emite la última ubicación conocida y posteriores cambios */
+    /** Se emite la última ubicación conocida y posteriores cambios */
     fun locationFlow(): Flow<GeoPoint?>
 }

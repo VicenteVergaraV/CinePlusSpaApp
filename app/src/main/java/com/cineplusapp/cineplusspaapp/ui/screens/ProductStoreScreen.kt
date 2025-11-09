@@ -13,7 +13,8 @@ import com.cineplusapp.cineplusspaapp.viewmodel.ProductViewModel
 @Composable
 fun ProductStoreScreen(
     onProductClick: (Int) -> Unit,
-    vm: ProductViewModel = hiltViewModel()
+    vm: ProductViewModel = hiltViewModel(),
+    onBack: () -> Unit
 ) {
     val products by vm.products.collectAsState()
     Column(Modifier.fillMaxSize().padding(16.dp)) {
