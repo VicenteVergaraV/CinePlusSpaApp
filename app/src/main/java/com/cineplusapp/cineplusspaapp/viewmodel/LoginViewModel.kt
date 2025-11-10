@@ -40,7 +40,7 @@ class LoginViewModel @Inject constructor(
             return@launch
         }
 
-        // Si quieres que "demo" no golpee backend, puedes generar tokens dummy
+
         if (isDemo) {
             onSuccess("DEMO_ACCESS_TOKEN", "DEMO_REFRESH_TOKEN")
             ui = ui.copy(loading = false)

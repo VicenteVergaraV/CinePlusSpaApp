@@ -39,14 +39,12 @@ fun AppNavigation(session: SessionManager) {
     val navController: NavHostController = rememberNavController()
     val scope = rememberCoroutineScope()
 
-    // 👇 única fuente de verdad para el arranque
     val accessToken: String? by session.accessTokenFlow.collectAsState(initial = null)
-
-    // Aún no carga DataStore → splash
-    if (accessToken == null) {
-        SplashScreen()
-        return
+    LaunchedEffect(accessToken) {
+        android.util.Log.d("AppNav", "accessToken='$accessToken'")
     }
+    if (accessToken == null) { SplashScreen(); return }
+
 
     val start = if (accessToken!!.isBlank()) Routes.LOGIN else Routes.HOME
 

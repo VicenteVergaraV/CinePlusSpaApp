@@ -10,10 +10,15 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import java.security.MessageDigest
+import androidx.datastore.preferences.core.emptyPreferences
+import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.distinctUntilChanged
+import java.io.IOException
+
+private val Context.dataStore by preferencesDataStore(name = "session_prefs")
 
 class SessionManager(private val context: Context) {
     companion object {
-        private val Context.dataStore by preferencesDataStore(name = "session_prefs")
         private val KEY_AUTH_TOKEN = stringPreferencesKey("auth_token")
         private val KEY_REFRESH_TOKEN = stringPreferencesKey("refresh_token")
 
@@ -24,7 +29,16 @@ class SessionManager(private val context: Context) {
 
     // Flow para observar el access token
     val accessTokenFlow: Flow<String?> =
-        context.dataStore.data.map { it[KEY_AUTH_TOKEN] }
+        context.dataStore.data
+            .catch { e ->
+                if (e is IOException) {
+                    emit(emptyPreferences())   // <-- evita estar en null
+                } else {
+                    throw e
+                }
+            }
+            .map { it[KEY_AUTH_TOKEN] }
+            .distinctUntilChanged()
 
     val isLoggedInFlow = accessTokenFlow.map { !it.isNullOrBlank() }
 
