@@ -8,9 +8,7 @@ plugins {
 
 android {
     namespace = "com.cineplusapp.cineplusspaapp"
-    compileSdk {
-        version = release(36)
-    }
+    compileSdk = 36
 
     defaultConfig {
         applicationId = "com.cineplusapp.cineplusspaapp"
@@ -137,6 +135,30 @@ dependencies {
 
     // Coil - Carga de Imagenes desde URLs
     implementation("io.coil-kt:coil-compose:2.6.0")
+
+    // Testing JUnit
+    testImplementation("junit:junit:4.13.2")
+
+    // Testing Coroutines
+    testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.9.0")
+
+    // Testing MockK (mocking framework)
+    testImplementation("libs.mockk")
+    androidTestImplementation("libs.mockk.android")
+
+    // Testing Turbine
+    testImplementation("app.cash.turbine:turbine:1.0.0")
+
+    // Testing Core-Testing
+    testImplementation("androidx.arch.core:core-testing:2.2.0")
+
+    //Android Testing
+    androidTestImplementation("androidx.compose.ui:ui-test-junit4")
+    androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")
+
+    tasks.withType<Test>().configureEach {
+        useJUnitPlatform()
+    }
 }
 
 kapt {
