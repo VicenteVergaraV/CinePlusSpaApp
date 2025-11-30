@@ -28,7 +28,7 @@ class SessionManager(private val context: Context) {
     }
 
     // Flow para observar el access token
-    val accessTokenFlow: Flow<String?> =
+    val accessTokenFlow: Flow<String> =
         context.dataStore.data
             .catch { e ->
                 if (e is IOException) {
@@ -37,7 +37,7 @@ class SessionManager(private val context: Context) {
                     throw e
                 }
             }
-            .map { it[KEY_AUTH_TOKEN] }
+            .map { it[KEY_AUTH_TOKEN] ?: "" }
             .distinctUntilChanged()
 
     val isLoggedInFlow = accessTokenFlow.map { !it.isNullOrBlank() }

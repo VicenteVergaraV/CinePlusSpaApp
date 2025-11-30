@@ -39,14 +39,12 @@ fun AppNavigation(session: SessionManager) {
     val navController: NavHostController = rememberNavController()
     val scope = rememberCoroutineScope()
 
-    val accessToken: String? by session.accessTokenFlow.collectAsState(initial = null)
-    LaunchedEffect(accessToken) {
-        android.util.Log.d("AppNav", "accessToken='$accessToken'")
-    }
+    val accessToken: String by session.accessTokenFlow.collectAsState(initial = "")
+
     if (accessToken == null) { SplashScreen(); return }
 
 
-    val start = if (accessToken!!.isBlank()) Routes.LOGIN else Routes.HOME
+    val start = if (accessToken.isBlank()) Routes.LOGIN else Routes.HOME
 
     NavHost(navController = navController, startDestination = start) {
 
