@@ -34,6 +34,17 @@ android {
         resources {
             excludes += "/META-INF/{AL2.0,LGPL2.1}"
             excludes += "META-INF/gradle/incremental.annotation.processors"
+            excludes += "META-INF/LICENSE.md"
+            excludes += "META-INF/LICENSE-notice.md"
+        }
+    }
+
+    testOptions {
+        unitTests {
+            isReturnDefaultValues = true
+            all {
+                it.jvmArgs("-XX:+EnableDynamicAgentLoading")
+            }
         }
     }
 
@@ -155,10 +166,6 @@ dependencies {
     //Android Testing
     androidTestImplementation("androidx.compose.ui:ui-test-junit4")
     androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")
-
-    tasks.withType<Test>().configureEach {
-        useJUnitPlatform()
-    }
 }
 
 kapt {
