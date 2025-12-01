@@ -20,14 +20,14 @@ class AuthRepositoryImpl(
             Result.success(authTokens)
         } catch (e: HttpException) {
             if (e.code() == 401) {
-                Result.failure(Exception("Invalid credentials"))
+                Result.failure(Exception("Credenciales inválidas"))
             } else {
-                Result.failure(Exception("Network error"))
+                Result.failure(Exception("Error de red"))
             }
         } catch (e: IOException) {
-            Result.failure(Exception("Network error"))
+            Result.failure(Exception("Error de red"))
         } catch (e: Exception) {
-            Result.failure(Exception("An unknown error occurred"))
+            Result.failure(Exception("Un error desconocido ocurrió"))
         }
     }
 

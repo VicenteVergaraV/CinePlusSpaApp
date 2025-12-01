@@ -41,7 +41,7 @@ class LoginViewModelTest {
     }
 
     @Test
-    fun `login exitoso debe retornar Success con AuthTokens`() = runTest {
+    fun `login exitoso`() = runTest {
         // Given
         val email = "test@example.com"
         val password = "password123"
@@ -70,11 +70,11 @@ class LoginViewModelTest {
     }
 
     @Test
-    fun `login con credenciales invalidas debe retornar Failure`() = runTest {
+    fun `credenciales invalidas`() = runTest {
         // Given
         val email = "wrong@example.com"
         val password = "wrongpassword"
-        val failureResult = Result.failure<AuthTokens>(Exception("Invalid credentials"))
+        val failureResult = Result.failure<AuthTokens>(Exception("Credenciales inválidas"))
 
         coEvery { mockSessionManager.isUserRegistered(email) } returns true
         coEvery { mockSessionManager.validateLocalCredentials(email, password) } returns true
@@ -87,15 +87,15 @@ class LoginViewModelTest {
 
         // Then
         assertNotNull(viewModel.ui.error)
-        assertEquals("Invalid credentials", viewModel.ui.error)
+        assertEquals("Credenciales inválidas", viewModel.ui.error)
     }
 
     @Test
-    fun `login con error de red debe retornar Failure con mensaje de error`() = runTest {
+    fun `error de red`() = runTest {
         // Given
         val email = "test@example.com"
         val password = "password"
-        val failureResult = Result.failure<AuthTokens>(Exception("Network error"))
+        val failureResult = Result.failure<AuthTokens>(Exception("Error de red"))
 
         coEvery { mockSessionManager.isUserRegistered(email) } returns true
         coEvery { mockSessionManager.validateLocalCredentials(email, password) } returns true
@@ -107,6 +107,6 @@ class LoginViewModelTest {
 
         // Then
         assertNotNull(viewModel.ui.error)
-        assertTrue(viewModel.ui.error!!.contains("Network error"))
+        assertTrue(viewModel.ui.error!!.contains("Error de red"))
     }
 }

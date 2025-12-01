@@ -33,7 +33,7 @@ class AuthRepositoryTest {
     }
 
     @Test
-    fun loginSuccessfulShouldReturnSuccessWithAuthTokens() = runTest {
+    fun `login exitoso 200`() = runTest {
         // Given
         val email = "test@example.com"
         val password = "password123"
@@ -61,11 +61,11 @@ class AuthRepositoryTest {
     }
 
     @Test
-    fun loginWithInvalidCredentialsShouldReturnFailure() = runTest {
+    fun `credenciales invalidas`() = runTest {
         // Given
         val email = "wrong@example.com"
         val password = "wrongpassword"
-        val errorResponse = "{\"error\":\"Invalid credentials\"}".toResponseBody(null)
+        val errorResponse = "{\"error\":\"Credenciales inválidas\"}".toResponseBody(null)
         val httpException = HttpException(Response.error<Any>(401, errorResponse))
         coEvery { mockApiService.login(any()) } throws httpException
 
@@ -74,11 +74,11 @@ class AuthRepositoryTest {
 
         // Then
         assertTrue(result.isFailure)
-        assertEquals("Invalid credentials", result.exceptionOrNull()?.message)
+        assertEquals("Credenciales inválidas", result.exceptionOrNull()?.message)
     }
 
     @Test
-    fun loginWithNetworkErrorShouldReturnFailure() = runTest {
+    fun `error de red`() = runTest {
         // Given
         val ioException = IOException("Network error")
         coEvery { mockApiService.login(any()) } throws ioException
@@ -88,6 +88,6 @@ class AuthRepositoryTest {
 
         // Then
         assertTrue(result.isFailure)
-        assertEquals("Network error", result.exceptionOrNull()?.message)
+        assertEquals("Error de red", result.exceptionOrNull()?.message)
     }
 }
