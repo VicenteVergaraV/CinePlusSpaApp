@@ -1,52 +1,91 @@
-// repository/impl/MovieRepositoryLocal.kt
 package com.cineplusapp.cineplusspaapp.repository.impl
 
-import com.cineplusapp.cineplusspaapp.data.local.dao.MovieDao
-import com.cineplusapp.cineplusspaapp.data.local.entity.MovieEntity
-import com.cineplusapp.cineplusspaapp.data.mapper.toDomain
-import com.cineplusapp.cineplusspaapp.data.model.Movie
+import com.cineplusapp.cineplusspaapp.data.mappers.MovieMapper
+import com.cineplusapp.cineplusspaapp.data.remote.PeliculaApiService
+import com.cineplusapp.cineplusspaapp.data.remote.dto.CrearMovieRequest
+import com.cineplusapp.cineplusspaapp.data.remote.dto.UpdateMovieRequest
+import com.cineplusapp.cineplusspaapp.domain.model.MovieUi
 import com.cineplusapp.cineplusspaapp.repository.MovieRepository
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
-class MovieRepositoryLocal @Inject constructor(
-    private val dao: MovieDao
+class MovieRepositoryRemote @Inject constructor(
+    // 1. Inyectamos la interfaz de Retrofit
+    private val apiService: PeliculaApiService,
+    // 2. Inyectamos el Mapper para transformar los datos de red
+    private val movieMapper: MovieMapper
 ) : MovieRepository {
 
-    override fun list(): Flow<List<Movie>> =
-        dao.observeAll().map { list -> list.map { it.toDomain() } }
 
-    override fun byId(id: Int): Flow<Movie?> =
-        dao.observeById(id).map { it?.toDomain() }
+    /**
+     * Obtiene todas las películas (Lista).
+     * Usa PeliculaListResponse y el Mapper.
+     */
+    override suspend fun getMovies(): List<MovieUi> {
+        val response = apiService.getAllPeliculas()
 
-    override suspend fun seedIfEmpty() {
-        if (dao.count() == 0) {
-            val seed = listOf(
-                MovieEntity(
-                    id = 1,
-                    title = "CinePlus: Origen",
-                    synopsis = "La historia de la app 😉",
-                    posterUrl = null,
-                    durationMin = 118,
-                    rating = "PG-13",
-                    genresCsv = "accion|aventura|scifi",
-                    showtimesCsv = "2025-11-02 20:00|2025-11-03 18:00"
-                ),
-                MovieEntity(
-                    id = 2,
-                    title = "Comedia Plus",
-                    synopsis = "Risas y más risas.",
-                    posterUrl = null,
-                    durationMin = 95,
-                    rating = "ATP",
-                    genresCsv = "comedia",
-                    showtimesCsv = "2025-11-04 16:00|2025-11-04 19:00"
-                )
-            )
-            dao.insertAll(seed)
+        if (response.isSuccessful) {
+            // CORRECCIÓN CLAVE: Acceder a la propiedad .data del DTO de respuesta
+            val remoteMovies = response.body()?.data ?: emptyList()
+            return movieMapper.mapFromRemoteList(remoteMovies)
+        } else {
+            // Manejo de errores de HTTP (4xx, 5xx)
+            throw Exception("Error ${response.code()}: No se pudo obtener la lista de películas.")
         }
+    }
+
+    /**
+     * Obtiene una película por su ID (Detalle).
+     * Usa PeliculaSingleResponse y el Mapper.
+     */
+    override suspend fun getMovieById(id: String): MovieUi? {
+        val response = apiService.getPeliculaById(id)
+
+        if (response.isSuccessful && response.body() != null) {
+            // CORRECCIÓN CLAVE: Acceder a la propiedad .data del DTO de respuesta
+            val remoteMovie = response.body()!!.data
+            return movieMapper.mapFromRemote(remoteMovie)
+        } else if (response.code() == 404) {
+            return null // Película no encontrada
+        } else {
+            throw Exception("Error ${response.code()}: No se pudo obtener la película.")
+        }
+    }
+
+    // --- FUNCIONES CRUD ADICIONALES (Opcional, pero necesarias para tu Backend) ---
+
+    /**
+     * Crea una nueva película. Requiere token (gestionado por AuthInterceptor).
+     */
+    suspend fun createMovie(request: CrearMovieRequest): MovieUi {
+        val response = apiService.createPelicula(request)
+        if (response.isSuccessful && response.body()?.data != null) {
+            return movieMapper.mapFromRemote(response.body()!!.data)
+        }
+        throw Exception("Error al crear la película: Código ${response.code()}")
+    }
+
+    /**
+     * Actualiza una película. Requiere token.
+     */
+    suspend fun updateMovie(id: String, request: UpdateMovieRequest): MovieUi {
+        val response = apiService.updatePelicula(id, request)
+        if (response.isSuccessful && response.body()?.data != null) {
+            return movieMapper.mapFromRemote(response.body()!!.data)
+        }
+        throw Exception("Error al actualizar la película: Código ${response.code()}")
+    }
+
+    /**
+     * Elimina una película. Requiere token.
+     */
+    suspend fun deleteMovie(id: String): Boolean {
+        val response = apiService.deletePelicula(id)
+        if (response.isSuccessful) {
+            // Asume que si es 200/OK, la eliminación fue exitosa (el backend devuelve { success: true, ... })
+            return response.body()?.success ?: false
+        }
+        throw Exception("Error al eliminar la película: Código ${response.code()}")
     }
 }

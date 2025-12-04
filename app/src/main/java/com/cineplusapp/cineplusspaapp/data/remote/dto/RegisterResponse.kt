@@ -2,8 +2,8 @@ package com.cineplusapp.cineplusspaapp.data.remote.dto
 
 import com.google.gson.annotations.SerializedName
 
-data class LoginResponse(
-    val user: AuthUserDto,
-    @SerializedName("access_token")
+data class RegisterResponse(
+    val user: UserDto,
+    @SerializedName("access")
     val accessToken: String
 )

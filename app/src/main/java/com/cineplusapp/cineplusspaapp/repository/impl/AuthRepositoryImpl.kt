@@ -11,13 +11,17 @@ class AuthRepositoryImpl @Inject constructor(
 ) : AuthRepository {
 
     override suspend fun login(user: String, pass: String): Result<AuthTokens> = try {
-        val body = api.login(LoginRequest(username = user, password = pass)) // /user/login
+        // The LoginRequest now expects 'email' instead of 'username'
+        val body = api.login(LoginRequest(email = user, password = pass))
         val access = body.accessToken?.trim().orEmpty()
-        if (access.isBlank()) Result.failure(IllegalStateException("Access token vacío"))
-        else Result.success(AuthTokens(access = access, refresh = body.refreshToken))
+        if (access.isBlank()) {
+            Result.failure(IllegalStateException("Access token is empty"))
+        } else {
+            Result.success(AuthTokens(access = access))
+        }
     } catch (e: Exception) {
         Result.failure(e)
     }
 
-    override suspend fun logout() { /* endpoint / limpiar tokens */ }
+    override suspend fun logout() { /* TODO: endpoint / limpiar tokens */ }
 }

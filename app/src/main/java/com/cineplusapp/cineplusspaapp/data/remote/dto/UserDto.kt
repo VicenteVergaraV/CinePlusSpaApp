@@ -3,21 +3,11 @@ package com.cineplusapp.cineplusspaapp.data.remote.dto
 import com.google.gson.annotations.SerializedName
 
 data class UserDto(
-    @SerializedName("id")
-    val id : Int,
-
-    @SerializedName("username")
-    val username: String,
-
-    @SerializedName("email")
+    @SerializedName("_id")
+    val id: String,
     val email: String,
-
-    @SerializedName("firstName")
-    val firstName: String,
-
-    @SerializedName("lastName")
-    val lastName: String,
-
-    @SerializedName("image")
-    val image: String? = null
+    val role: String,
+    val isActive: Boolean,
+    val emailVerified: Boolean,
+    val createdAt: String
 )

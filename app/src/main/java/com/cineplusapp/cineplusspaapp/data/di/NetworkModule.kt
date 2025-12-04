@@ -16,7 +16,7 @@ import javax.inject.Named
 import javax.inject.Singleton
 import java.util.concurrent.TimeUnit
 
-private const val BASE_URL = "http://10.0.2.2:3000/"
+private const val BASE_URL = "https://cineplus-api.onrender.com/api/"
 
 @Module
 @InstallIn(SingletonComponent::class)
