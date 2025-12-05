@@ -50,9 +50,9 @@ fun AppNavigation(session: SessionManager) {
 
         composable(Routes.LOGIN) {
             LoginScreen(
-                onLoginSuccess = { access, refresh ->
+                onLoginSuccess = { authTokens ->
                     scope.launch {
-                        session.saveTokens(access, refresh)
+                        session.saveTokens(authTokens.access, null)
                         navController.navigate(Routes.HOME) {
                             popUpTo(Routes.LOGIN) { inclusive = true }
                             launchSingleTop = true
@@ -149,7 +149,7 @@ fun AppNavigation(session: SessionManager) {
             arguments = listOf(navArgument("id") { type = NavType.IntType })
         ) { back ->
             val id = back.arguments!!.getInt("id")
-            val vm: ProductViewModel = hiltViewModel()
+            val vm: ProductDetailViewModel = hiltViewModel()
             ProductDetailScreen(
                 vm = vm,
                 productId = id,

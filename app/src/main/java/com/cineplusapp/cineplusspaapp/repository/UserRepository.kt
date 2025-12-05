@@ -1,27 +1,16 @@
 package com.cineplusapp.cineplusspaapp.repository
 
-import android.content.Context
-import com.cineplusapp.cineplusspaapp.data.remote.ApiService
-import com.cineplusapp.cineplusspaapp.data.remote.RetrofitClient
-import com.cineplusapp.cineplusspaapp.data.remote.dto.UserDto
+import com.cineplusapp.cineplusspaapp.data.local.dao.UserDao
+import com.cineplusapp.cineplusspaapp.domain.model.User
+import kotlinx.coroutines.flow.Flow
+import javax.inject.Inject
+import javax.inject.Singleton
 
-class UserRepository(context: Context) {
-    //Creamdo la instancia del API Service
-    private val apiService: ApiService = RetrofitClient
-        .create(context)
-        .create(ApiService::class.java)
-
-    // Obtencion de un usuario de la API
-    suspend fun fetchUser(id: Int = 1): Result<UserDto> {
-        return try {
-            // llamar a la API
-            val user = apiService.getUserById(id)
-
-            Result.success(user)
-
-        } catch (e: Exception) {
-            // En el caso de que algo falle (sin conexion, timeout, etc)
-            Result.failure(e)
-        }
+@Singleton
+class UserRepository @Inject constructor(
+    private val userDao: UserDao
+) {
+    fun getUserById(userId: Int): Flow<User?> {
+        return userDao.getUserById(userId)
     }
 }

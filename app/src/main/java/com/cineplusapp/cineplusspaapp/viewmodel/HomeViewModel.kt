@@ -4,7 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.work.WorkManager
 import com.cineplusapp.cineplusspaapp.data.sync.SyncScheduler
-import com.cineplusapp.cineplusspaapp.repository.AuthRepository
+import com.cineplusapp.cineplusspaapp.domain.repository.AuthRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject

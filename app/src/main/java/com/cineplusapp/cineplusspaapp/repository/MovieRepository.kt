@@ -2,10 +2,9 @@ package com.cineplusapp.cineplusspaapp.repository
 
 import com.cineplusapp.cineplusspaapp.domain.model.MovieUi
 import kotlinx.coroutines.flow.Flow
+
 interface MovieRepository {
-
-    suspend fun getMovies(): List<MovieUi>
-
-    suspend fun getMovieById(id: String): MovieUi?
+    fun list(): Flow<List<MovieUi>>
+    fun byId(id: Int): Flow<MovieUi?>
+    suspend fun seedIfEmpty()
 }
-

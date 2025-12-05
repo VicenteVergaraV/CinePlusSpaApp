@@ -1,55 +1,51 @@
 package com.cineplusapp.cineplusspaapp.ui.profile
 
-import android.app.Application
-import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.cineplusapp.cineplusspaapp.repository.UserRepository
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
 data class ProfileUiState(
     val isLoading: Boolean = false,
-    val userName: String = "",
     val userEmail: String = "",
     val error: String? = null
 )
 
-
-class ProfileViewModel(application: Application): AndroidViewModel(application) {
-
-    private val repository = UserRepository(application)
+@HiltViewModel
+class ProfileViewModel @Inject constructor(
+    private val repository: UserRepository
+) : ViewModel() {
 
     private val _uiState = MutableStateFlow(ProfileUiState())
-
-    val uiState: StateFlow<ProfileUiState> = _uiState
+    val uiState: StateFlow<ProfileUiState> = _uiState.asStateFlow()
 
     fun loadUser(id: Int = 1) {
-        _uiState.value = _uiState.value.copy(
-            isLoading = true,
-            error = null
-        )
-
         viewModelScope.launch {
-            val result = repository.fetchUser(id)
-
-            _uiState.value = result.fold(
-                onSuccess = { user ->
-
-                    _uiState.value.copy(
-                        isLoading = false,
-                        userName = user.username,
-                        userEmail = user.email ?: "Sin email",
-                        error = null
-                    )
-                },
-                onFailure = { exception ->
-                    _uiState.value.copy(
-                        isLoading = false,
-                        error = exception.localizedMessage ?: "Error desconocido"
-                    )
+            _uiState.update { it.copy(isLoading = true, error = null) }
+            repository.getUserById(id).collect { user ->
+                if (user != null) {
+                    _uiState.update {
+                        it.copy(
+                            isLoading = false,
+                            userEmail = user.email,
+                            error = null
+                        )
+                    }
+                } else {
+                    _uiState.update {
+                        it.copy(
+                            isLoading = false,
+                            error = "User not found"
+                        )
+                    }
                 }
-            )
+            }
         }
     }
 }

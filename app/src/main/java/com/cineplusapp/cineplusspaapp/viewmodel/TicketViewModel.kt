@@ -3,7 +3,7 @@ package com.cineplusapp.cineplusspaapp.viewmodel
 import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.cineplusapp.cineplusspaapp.data.local.entity.Ticket
+import com.cineplusapp.cineplusspaapp.domain.model.Ticket
 import com.cineplusapp.cineplusspaapp.repository.TicketRepository
 import com.cineplusapp.cineplusspaapp.utils.PdfGenerator
 import com.cineplusapp.cineplusspaapp.utils.NotificationUtils

@@ -6,7 +6,7 @@ import android.graphics.Color
 import android.graphics.Paint
 import android.graphics.pdf.PdfDocument
 import android.os.Environment
-import com.cineplusapp.cineplusspaapp.data.local.entity.Ticket
+import com.cineplusapp.cineplusspaapp.domain.model.Ticket
 import java.io.File
 import java.io.FileOutputStream
 import java.text.SimpleDateFormat

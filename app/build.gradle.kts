@@ -52,6 +52,7 @@ android {
 
 dependencies {
     implementation(libs.androidx.core.ktx)
+    implementation("androidx.appcompat:appcompat:1.7.0")
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.activity.compose)
     implementation(platform(libs.androidx.compose.bom))
@@ -128,7 +129,8 @@ dependencies {
     implementation("com.squareup.retrofit2:converter-gson:2.11.0")
 
     // Corutines (en el caso de no tenerlas)
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.9.0")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.8.0")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.8.0")
 
     // DataStore - Guardado de tokens
     implementation("androidx.datastore:datastore-preferences:1.0.0")
@@ -143,8 +145,8 @@ dependencies {
     testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.9.0")
 
     // Testing MockK (mocking framework)
-    testImplementation("libs.mockk")
-    androidTestImplementation("libs.mockk.android")
+    testImplementation(libs.mockk)
+    androidTestImplementation(libs.mockk.android)
 
     // Testing Turbine
     testImplementation("app.cash.turbine:turbine:1.0.0")
@@ -155,16 +157,11 @@ dependencies {
     //Android Testing
     androidTestImplementation("androidx.compose.ui:ui-test-junit4")
     androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")
-
-    tasks.withType<Test>().configureEach {
-        useJUnitPlatform()
-    }
 }
 
 kapt {
     correctErrorTypes = true
     arguments {
-        arg("room.schemaLocation", "$projectDir/schemas")
         arg("room.incremental", "true")
         arg("room.expandProjection", "true")
     }

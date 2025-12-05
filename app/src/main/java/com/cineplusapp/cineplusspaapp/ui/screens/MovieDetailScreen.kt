@@ -19,11 +19,6 @@ fun MovieDetailScreen(
 
     Column(Modifier.fillMaxSize().padding(20.dp)) {
         Text(movie?.title ?: "Cargando…")
-        Spacer(Modifier.height(8.dp))
-        // Usa synopsis si existe; si no, muestra los géneros (lista → string)
-        Text(movie?.synopsis?.takeIf { it.isNotBlank() }
-            ?: movie?.genres?.joinToString(", ")
-            ?: "—")
         Spacer(Modifier.height(24.dp))
         Button(onClick = onBack) { Text("Volver") }
     }

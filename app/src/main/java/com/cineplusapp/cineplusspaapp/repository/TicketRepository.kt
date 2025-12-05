@@ -1,7 +1,7 @@
 package com.cineplusapp.cineplusspaapp.repository
 
 import com.cineplusapp.cineplusspaapp.data.local.dao.TicketDao
-import com.cineplusapp.cineplusspaapp.data.local.entity.Ticket
+import com.cineplusapp.cineplusspaapp.domain.model.Ticket
 import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 import javax.inject.Singleton

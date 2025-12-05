@@ -1,6 +1,6 @@
 package com.cineplusapp.cineplusspaapp.data.di
 
-import com.cineplusapp.cineplusspaapp.repository.AuthRepository
+import com.cineplusapp.cineplusspaapp.domain.repository.AuthRepository
 import com.cineplusapp.cineplusspaapp.repository.impl.AuthRepositoryImpl
 import dagger.Binds
 import dagger.Module

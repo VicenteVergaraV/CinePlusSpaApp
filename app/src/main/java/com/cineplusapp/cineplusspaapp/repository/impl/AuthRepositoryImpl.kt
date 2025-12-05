@@ -3,7 +3,7 @@ package com.cineplusapp.cineplusspaapp.repository.impl
 import com.cineplusapp.cineplusspaapp.data.remote.ApiService
 import com.cineplusapp.cineplusspaapp.data.remote.dto.AuthTokens
 import com.cineplusapp.cineplusspaapp.data.remote.dto.LoginRequest
-import com.cineplusapp.cineplusspaapp.repository.AuthRepository
+import com.cineplusapp.cineplusspaapp.domain.repository.AuthRepository
 import javax.inject.Inject
 
 class AuthRepositoryImpl @Inject constructor(

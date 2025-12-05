@@ -1,4 +1,3 @@
-// ui/screens/CarteleraScreen.kt
 package com.cineplusapp.cineplusspaapp.ui.screens
 
 import androidx.compose.foundation.clickable
@@ -9,6 +8,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.cineplusapp.cineplusspaapp.viewmodel.MovieViewModel
+
 @Composable
 fun CarteleraScreen(
     onMovieClick: (Int) -> Unit,
@@ -25,12 +25,10 @@ fun CarteleraScreen(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(vertical = 6.dp)
-                    .clickable { onMovieClick(m.id) }
+                    .clickable { onMovieClick(m.id.toInt()) }
             ) {
                 Column(Modifier.padding(12.dp)) {
                     Text(m.title, style = MaterialTheme.typography.titleMedium)
-                    Spacer(Modifier.height(4.dp))
-                    Text(m.synopsis.ifBlank { "—" }, style = MaterialTheme.typography.bodyMedium)
                 }
             }
         }

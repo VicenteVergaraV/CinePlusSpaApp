@@ -4,6 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
+    "start": "node index.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
@@ -18,9 +19,8 @@
   },
   "homepage": "https://github.com/VicenteVergaraV/CinePlusSpaApp#readme",
   "dependencies": {
-    "body-parser": "^2.2.0",
     "cors": "^2.8.5",
-    "express": "^5.1.0",
+    "express": "^4.19.2",
     "jsonwebtoken": "^9.0.2"
   }
 }
