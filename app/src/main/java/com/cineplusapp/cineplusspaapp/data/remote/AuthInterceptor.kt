@@ -20,13 +20,21 @@ class AuthInterceptor @Inject constructor(
             return chain.proceed(original)
         }
 
-        // Evitar login/refresh
         val path = original.url.encodedPath
-        if (path.endsWith("/user/login") || path.endsWith("/auth/refresh")) {
+
+        // Evitar agregar token en login/registro/refresh
+        val isAuthCall =
+            path.endsWith("/auth/login") ||
+                    path.endsWith("/auth/register") ||
+                    path.endsWith("/auth/refresh")
+
+        if (isAuthCall) {
             return chain.proceed(original)
         }
 
+        // Obtener token desde SessionManager
         val token = runBlocking { sessionManager.getAuthToken() }
+
         if (token.isNullOrBlank()) {
             return chain.proceed(original)
         }
@@ -37,4 +45,5 @@ class AuthInterceptor @Inject constructor(
 
         return chain.proceed(authed)
     }
+
 }

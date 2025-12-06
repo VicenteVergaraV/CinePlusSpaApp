@@ -5,7 +5,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.cineplusapp.cineplusspaapp.data.local.SessionManager
+import com.cineplusapp.cineplusspaapp.domain.repository.AuthRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -18,7 +18,7 @@ data class RegisterUi(
 
 @HiltViewModel
 class RegisterViewModel @Inject constructor(
-    private val session: SessionManager
+    private val authRepo: AuthRepository
 ) : ViewModel() {
 
     var ui by mutableStateOf(RegisterUi())
@@ -46,19 +46,25 @@ class RegisterViewModel @Inject constructor(
                 return@launch
             }
 
-            // ¿Ya existe?
-            if (session.isUserRegistered(e)) {
-                ui = RegisterUi(error = "El usuario ya está registrado.")
-                return@launch
-            }
-
-            // Registrar en DataStore local (hash interno en SessionManager)
             try {
-                session.registerUser(email = e, name = n, pass = p)
+                val result = authRepo.register(
+                    email = e,
+                    password = p,
+                    nombre = n
+                )
+
+                if (result.isFailure) {
+                    val ex = result.exceptionOrNull()
+                    ui = RegisterUi(error = ex?.message ?: "Error en registro.")
+                    return@launch
+                }
+
+                // Registro ok (con o sin token)
                 ui = RegisterUi(done = true)
                 onSuccess()
+
             } catch (ex: Exception) {
-                ui = RegisterUi(error = ex.message ?: "Error al registrar.")
+                ui = RegisterUi(error = ex.message ?: "Error en registro.")
             }
         }
     }

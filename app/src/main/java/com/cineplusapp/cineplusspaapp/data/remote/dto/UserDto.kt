@@ -6,8 +6,5 @@ data class UserDto(
     @SerializedName("_id")
     val id: String,
     val email: String,
-    val role: String,
-    val isActive: Boolean,
-    val emailVerified: Boolean,
-    val createdAt: String
+    val role: String
 )

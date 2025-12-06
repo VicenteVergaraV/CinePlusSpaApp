@@ -4,7 +4,6 @@ import com.cineplusapp.cineplusspaapp.data.remote.ApiService
 import com.cineplusapp.cineplusspaapp.data.remote.dto.AuthUserDto
 import com.cineplusapp.cineplusspaapp.data.remote.dto.LoginRequest
 import com.cineplusapp.cineplusspaapp.data.remote.dto.LoginResponse
-import com.cineplusapp.cineplusspaapp.domain.repository.AuthRepository
 import com.cineplusapp.cineplusspaapp.repository.impl.AuthRepositoryImpl
 import io.mockk.coEvery
 import io.mockk.mockk

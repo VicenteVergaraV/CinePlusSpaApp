@@ -39,25 +39,44 @@ fun AppNavigation(session: SessionManager) {
     val navController: NavHostController = rememberNavController()
     val scope = rememberCoroutineScope()
 
-    val accessToken: String by session.accessTokenFlow.collectAsState(initial = "")
+    // null = todavía cargando desde DataStore
+    val accessToken: String? by session.accessTokenFlow.collectAsState(initial = null)
 
-    if (accessToken == null) { SplashScreen(); return }
+    // Mientras se inicializa la sesión, solo mostramos Splash
+    if (accessToken == null) {
+        SplashScreen()
+        return
+    }
 
+    // Determinar pantalla inicial SOLO para el arranque
+    val startDestination = if (accessToken.isNullOrBlank()) {
+        Routes.LOGIN
+    } else {
+        Routes.HOME
+    }
 
-    val start = if (accessToken.isBlank()) Routes.LOGIN else Routes.HOME
+    // Efecto: si el token cambia a "logeado" y estoy en LOGIN, navego a HOME
+    LaunchedEffect(accessToken) {
+        val currentRoute = navController.currentDestination?.route
+        if (!accessToken.isNullOrBlank() && currentRoute == Routes.LOGIN) {
+            navController.navigate(Routes.HOME) {
+                popUpTo(Routes.LOGIN) { inclusive = true }
+                launchSingleTop = true
+            }
+        }
+    }
 
-    NavHost(navController = navController, startDestination = start) {
+    NavHost(
+        navController = navController,
+        startDestination = startDestination
+    ) {
 
         composable(Routes.LOGIN) {
             LoginScreen(
-                onLoginSuccess = { authTokens ->
-                    scope.launch {
-                        session.saveTokens(authTokens.access, null)
-                        navController.navigate(Routes.HOME) {
-                            popUpTo(Routes.LOGIN) { inclusive = true }
-                            launchSingleTop = true
-                        }
-                    }
+                onLoginSuccess = {
+                    // OJO: ya no necesitas pasar tokens ni guardar nada aquí.
+                    // El AuthViewModel + AuthRepository se encargan de guardar el token.
+                    // Este callback es opcional; si quieres, incluso puedes dejarlo vacío.
                 },
                 onGoRegister = { navController.navigate(Routes.REGISTER) }
             )
@@ -77,8 +96,6 @@ fun AppNavigation(session: SessionManager) {
                 onGoNearby = { navController.navigate(Routes.NEARBY) },
                 onLogout = {
                     vm.logout {
-                        // Asegura limpiar tokens antes de ir a LOGIN
-                        scope.launch { session.clearTokens() }
                         navController.navigate(Routes.LOGIN) {
                             popUpTo(0) { inclusive = true }
                             launchSingleTop = true
@@ -87,6 +104,13 @@ fun AppNavigation(session: SessionManager) {
                 }
             )
         }
+
+
+
+        composable(Routes.REGISTER) {
+            RegisterScreen(onRegistered = { navController.popBackStack() })
+        }
+
 
         composable(Routes.USERS) {
             UsersScreen(onClickUser = { id -> navController.navigate("user_detail/$id") })
@@ -134,7 +158,7 @@ fun AppNavigation(session: SessionManager) {
             )
         }
 
-// STORE
+        // STORE
         composable(Routes.STORE) {
             val vm: ProductViewModel = hiltViewModel()
             ProductStoreScreen(

@@ -18,7 +18,7 @@ fun MovieDetailScreen(
     val movie by vm.byId(movieId).collectAsState()
 
     Column(Modifier.fillMaxSize().padding(20.dp)) {
-        Text(movie?.title ?: "Cargando…")
+        Text(movie?.titulo ?: "Cargando…")
         Spacer(Modifier.height(24.dp))
         Button(onClick = onBack) { Text("Volver") }
     }

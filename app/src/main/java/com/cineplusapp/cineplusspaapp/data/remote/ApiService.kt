@@ -1,13 +1,6 @@
 package com.cineplusapp.cineplusspaapp.data.remote
 
-
-import com.cineplusapp.cineplusspaapp.data.remote.dto.LoginRequest
-import com.cineplusapp.cineplusspaapp.data.remote.dto.LoginResponse
-import com.cineplusapp.cineplusspaapp.data.remote.dto.RegisterRequest
-import com.cineplusapp.cineplusspaapp.data.remote.dto.RegisterResponse
-import com.cineplusapp.cineplusspaapp.data.remote.dto.UpdateUsuarioProfileRequest
-import com.cineplusapp.cineplusspaapp.data.remote.dto.UserDto
-import com.cineplusapp.cineplusspaapp.data.remote.dto.UsuarioProfileDto
+import com.cineplusapp.cineplusspaapp.data.remote.dto.*
 import retrofit2.http.Body
 import retrofit2.http.GET
 import retrofit2.http.POST
@@ -21,12 +14,12 @@ interface ApiService {
     @POST("auth/register")
     suspend fun register(
         @Body body: RegisterRequest
-    ): RegisterResponse
+    ): ApiResponse<RegisterResponse>
 
     @POST("auth/login")
     suspend fun login(
         @Body request: LoginRequest
-    ): LoginResponse
+    ): ApiResponse<LoginResponse>
 
     @GET("auth/profile")
     suspend fun getMyAuthProfile(): UserDto
@@ -34,7 +27,6 @@ interface ApiService {
 
     // ---------- USUARIO PROFILE ----------
 
-    // Perfil del usuario autenticado (dominio usuario-profile)
     @GET("usuario-profile/me")
     suspend fun getMyUsuarioProfile(): UsuarioProfileDto
 
@@ -43,7 +35,6 @@ interface ApiService {
         @Body body: UpdateUsuarioProfileRequest
     ): UsuarioProfileDto
 
-    // Endpoints “admin” (si el backend los expone y tu usuario tiene permisos)
     @GET("usuario-profile")
     suspend fun getAllProfiles(): List<UsuarioProfileDto>
 
@@ -51,4 +42,17 @@ interface ApiService {
     suspend fun getProfileByUserId(
         @Path("userId") userId: String
     ): UsuarioProfileDto
+
+
+    // ---------- PELICULA ----------
+
+    // Crear película (el token lo agrega el AuthInterceptor)
+    @POST("pelicula")
+    suspend fun crearPelicula(
+        @Body body: PeliculaRequest
+    ): ApiResponse<PeliculaDto>
+
+    // (Cuando tengas GET /api/pelicula en el backend)
+    @GET("pelicula")
+    suspend fun getPeliculas(): ApiResponse<List<PeliculaDto>>
 }

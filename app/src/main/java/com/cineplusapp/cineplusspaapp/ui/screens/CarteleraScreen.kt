@@ -28,7 +28,7 @@ fun CarteleraScreen(
                     .clickable { onMovieClick(m.id.toInt()) }
             ) {
                 Column(Modifier.padding(12.dp)) {
-                    Text(m.title, style = MaterialTheme.typography.titleMedium)
+                    Text(m.titulo, style = MaterialTheme.typography.titleMedium)
                 }
             }
         }

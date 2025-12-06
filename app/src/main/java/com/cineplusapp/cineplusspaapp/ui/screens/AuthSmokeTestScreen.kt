@@ -7,10 +7,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.cineplusapp.cineplusspaapp.viewmodel.AuthSmokeTestViewModel
+import com.cineplusapp.cineplusspaapp.viewmodel.AuthViewModel
 
 @Composable
-fun AuthSmokeTestScreen(vm: AuthSmokeTestViewModel = hiltViewModel()) {
+fun AuthSmokeTestScreen(vm: AuthViewModel = hiltViewModel()) {
     val status by vm.status.collectAsState()
     Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
         Column(horizontalAlignment = Alignment.CenterHorizontally) {

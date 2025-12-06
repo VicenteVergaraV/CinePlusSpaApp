@@ -4,7 +4,6 @@ import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import app.cash.turbine.test
 import com.cineplusapp.cineplusspaapp.data.local.SessionManager
 import com.cineplusapp.cineplusspaapp.data.remote.dto.AuthTokens
-import com.cineplusapp.cineplusspaapp.domain.repository.AuthRepository
 import com.cineplusapp.cineplusspaapp.viewmodel.LoginViewModel
 import io.mockk.coEvery
 import io.mockk.coVerify

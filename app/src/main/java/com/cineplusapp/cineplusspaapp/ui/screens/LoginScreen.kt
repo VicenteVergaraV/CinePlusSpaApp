@@ -14,6 +14,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
+import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -27,96 +28,49 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.cineplusapp.cineplusspaapp.data.remote.dto.AuthTokens
+import com.cineplusapp.cineplusspaapp.viewmodel.AuthViewModel
 import com.cineplusapp.cineplusspaapp.viewmodel.LoginViewModel
 
 @Composable
 fun LoginScreen(
-    onLoginSuccess: (authTokens: AuthTokens) -> Unit,
+    onLoginSuccess: () -> Unit,
     onGoRegister: () -> Unit,
-    vm: LoginViewModel = hiltViewModel()
+    viewModel: AuthViewModel = hiltViewModel()
 ) {
-    var username by remember { mutableStateOf("") }
-    var password by remember { mutableStateOf("") }
-    val uiState by vm.uiState.collectAsState()
+    val status by viewModel.status.collectAsState()
 
-    LaunchedEffect(vm.loginSuccess) {
-        vm.loginSuccess.collect { authTokens ->
-            onLoginSuccess(authTokens)
+    var email by remember { mutableStateOf("") }
+    var password by remember { mutableStateOf("") }
+
+    // Navegar cuando el estado indique éxito
+    LaunchedEffect(status) {
+        if (status.startsWith("Sesión activa:")) {
+            onLoginSuccess()
         }
     }
 
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(16.dp),
-        verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        Card(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(16.dp),
-            elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)
-        ) {
-            Column(
-                modifier = Modifier
-                    .padding(16.dp)
-                    .fillMaxWidth(),
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                Text("Iniciar Sesión", style = MaterialTheme.typography.headlineSmall)
+    // UI de ejemplo
+    Column {
+        Text(text = status)
 
-                Spacer(modifier = Modifier.height(16.dp))
+        TextField(
+            value = email,
+            onValueChange = { email = it },
+            label = { Text("Email") }
+        )
 
-                OutlinedTextField(
-                    value = username,
-                    onValueChange = { username = it },
-                    label = { Text("Usuario") },
-                    modifier = Modifier.fillMaxWidth(),
-                    isError = uiState.error != null
-                )
+        TextField(
+            value = password,
+            onValueChange = { password = it },
+            label = { Text("Contraseña") }
+        )
 
-                Spacer(modifier = Modifier.height(8.dp))
+        Button(onClick = { viewModel.login(email, password) }) {
+            Text("Iniciar sesión")
+        }
 
-                OutlinedTextField(
-                    value = password,
-                    onValueChange = { password = it },
-                    label = { Text("Contraseña") },
-                    visualTransformation = PasswordVisualTransformation(),
-                    modifier = Modifier.fillMaxWidth(),
-                    isError = uiState.error != null
-                )
-
-                uiState.error?.let {
-                    Text(
-                        it,
-                        color = MaterialTheme.colorScheme.error,
-                        modifier = Modifier.padding(top = 4.dp)
-                    )
-                }
-
-                Spacer(modifier = Modifier.height(16.dp))
-
-                Button(
-                    onClick = {
-                        if (username.isNotBlank() && password.isNotBlank()) {
-                            vm.login(username, password)
-                        }
-                    },
-                    enabled = !uiState.loading,
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-                    Text(if (uiState.loading) "Ingresando..." else "Ingresar")
-                }
-
-                TextButton(
-                    onClick = onGoRegister,
-                    enabled = !uiState.loading,
-                    modifier = Modifier.padding(top = 4.dp)
-                ) {
-                    Text("Crear cuenta")
-                }
-            }
+        TextButton(onClick = onGoRegister) {
+            Text("Registrarse")
         }
     }
 }

@@ -30,13 +30,18 @@ class MovieRepositoryLocal @Inject constructor(
         val response = apiService.getPeliculaById(id.toString())
         if (response.isSuccessful && response.body() != null) {
             val remoteMovie = response.body()!!.data
-            emit(movieMapper.mapFromRemote(remoteMovie))
+            if (remoteMovie != null) {
+                emit(movieMapper.mapFromRemote(remoteMovie))
+            } else {
+                emit(null) // data vino null, mejor emitir null
+            }
         } else if (response.code() == 404) {
             emit(null) // Película no encontrada
         } else {
             throw Exception("Error ${response.code()}: No se pudo obtener la película.")
         }
     }
+
 
     override suspend fun seedIfEmpty() {
         // No-op for remote repository

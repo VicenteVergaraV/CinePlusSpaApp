@@ -1,24 +1,24 @@
 package com.cineplusapp.cineplusspaapp.data.mappers
 
-import com.cineplusapp.cineplusspaapp.data.model.Movie
+import com.cineplusapp.cineplusspaapp.data.remote.dto.PeliculaDto
 import com.cineplusapp.cineplusspaapp.domain.model.MovieUi
 import javax.inject.Inject
 
 class MovieMapper @Inject constructor() {
 
-    fun mapFromRemoteList(remoteMovies: List<Movie>): List<MovieUi> {
-        return remoteMovies.map { mapFromRemote(it) }
-    }
+    fun mapFromRemoteList(list: List<PeliculaDto>): List<MovieUi> =
+        list.map { mapFromRemote(it) }
 
-    fun mapFromRemote(remoteMovie: Movie): MovieUi {
-        return MovieUi(
-            id = remoteMovie.id.oid,
-            title = remoteMovie.title,
-            year = remoteMovie.year,
-            plot = remoteMovie.plot,
-            posterUrl = remoteMovie.poster ?: "",
-            genres = remoteMovie.genres,
-            rating = remoteMovie.imdb.rating
+    fun mapFromRemote(remote: PeliculaDto): MovieUi =
+        MovieUi(
+            id = remote._id ?: "",
+            titulo = remote.titulo,
+            director = remote.director,
+            genero = remote.genero,
+            duracion = remote.duracion,
+            sinopsis = remote.sinopsis,
+            posterUrl = remote.poster ?: remote.imagen,
+            thumbnailUrl = remote.imagenThumbnail,
+            trailerUrl = remote.trailer
         )
-    }
 }

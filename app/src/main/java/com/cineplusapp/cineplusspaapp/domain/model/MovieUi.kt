@@ -2,10 +2,13 @@ package com.cineplusapp.cineplusspaapp.domain.model
 
 data class MovieUi(
     val id: String,
-    val title: String,
-    val year: Int,
-    val plot: String,
-    val posterUrl: String,
-    val genres: List<String>,
-    val rating: Double
+    val titulo: String,
+    val director: String?,
+    val genero: String?,
+    val duracion: Int?,          // en minutos
+    val sinopsis: String?,
+    val posterUrl: String?,      // para mostrar en la lista/detalle
+    val thumbnailUrl: String?,   // para miniaturas, si lo usas
+    val trailerUrl: String?      // link a YouTube u otro
 )
+
