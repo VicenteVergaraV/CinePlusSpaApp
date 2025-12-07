@@ -5,7 +5,8 @@ import com.cineplusapp.cineplusspaapp.domain.model.User
 
 fun UserDto.toUser(): User {
     return User(
-        id = this.id.toInt(),
-        email = this.email
+        id = this.id.hashCode(),
+        email = this.email,
+        role = this.role
     )
 }

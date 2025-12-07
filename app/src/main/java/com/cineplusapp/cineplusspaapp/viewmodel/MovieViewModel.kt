@@ -1,4 +1,3 @@
-// viewmodel/MovieViewModel.kt
 package com.cineplusapp.cineplusspaapp.viewmodel
 
 import androidx.lifecycle.ViewModel

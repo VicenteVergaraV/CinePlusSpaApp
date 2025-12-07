@@ -7,6 +7,9 @@ import com.cineplusapp.cineplusspaapp.data.remote.dto.AuthTokens
 import com.cineplusapp.cineplusspaapp.data.remote.dto.LoginRequest
 import com.cineplusapp.cineplusspaapp.data.remote.dto.LoginResponse
 import com.cineplusapp.cineplusspaapp.data.remote.dto.RegisterRequest
+import com.cineplusapp.cineplusspaapp.data.remote.dto.UpdateUsuarioProfileRequest
+import com.cineplusapp.cineplusspaapp.data.remote.dto.UserDto
+import com.cineplusapp.cineplusspaapp.data.remote.dto.UsuarioProfileDto
 import com.cineplusapp.cineplusspaapp.domain.repository.AuthRepository
 import javax.inject.Inject
 
@@ -81,7 +84,17 @@ class AuthRepositoryImpl @Inject constructor(
             )
         }
 
+    override suspend fun getMe(): Result<UserDto> = runCatching {
+        api.getMyAuthProfile()
+    }
 
+    override suspend fun getMyProfile(): Result<UsuarioProfileDto> = runCatching {
+        api.getMyUsuarioProfile()
+    }
+
+    override suspend fun updateMyProfile(updateRequest: UpdateUsuarioProfileRequest): Result<UsuarioProfileDto> = runCatching {
+        api.updateMyUsuarioProfile(updateRequest)
+    }
 
     override suspend fun logout() {
         session.clearTokens()

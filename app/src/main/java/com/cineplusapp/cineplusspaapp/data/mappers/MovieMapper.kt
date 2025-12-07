@@ -9,9 +9,11 @@ class MovieMapper @Inject constructor() {
     fun mapFromRemoteList(list: List<PeliculaDto>): List<MovieUi> =
         list.map { mapFromRemote(it) }
 
-    fun mapFromRemote(remote: PeliculaDto): MovieUi =
-        MovieUi(
-            id = remote._id ?: "",
+    fun mapFromRemote(remote: PeliculaDto): MovieUi {
+        val id = remote._id ?: ""
+        return MovieUi(
+            id = id,
+            numericId = id.hashCode(),
             titulo = remote.titulo,
             director = remote.director,
             genero = remote.genero,
@@ -21,4 +23,5 @@ class MovieMapper @Inject constructor() {
             thumbnailUrl = remote.imagenThumbnail,
             trailerUrl = remote.trailer
         )
+    }
 }

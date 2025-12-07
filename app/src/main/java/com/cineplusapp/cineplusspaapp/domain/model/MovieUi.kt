@@ -2,6 +2,7 @@ package com.cineplusapp.cineplusspaapp.domain.model
 
 data class MovieUi(
     val id: String,
+    val numericId: Int,
     val titulo: String,
     val director: String?,
     val genero: String?,

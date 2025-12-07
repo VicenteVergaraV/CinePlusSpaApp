@@ -10,6 +10,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.cineplusapp.cineplusspaapp.data.local.SessionManager
+import com.cineplusapp.cineplusspaapp.data.remote.dto.UserDto
 import com.cineplusapp.cineplusspaapp.ui.profile.EditProfileScreen
 import com.cineplusapp.cineplusspaapp.ui.profile.ProfileScreen
 import com.cineplusapp.cineplusspaapp.ui.screens.*
@@ -88,7 +89,9 @@ fun AppNavigation(session: SessionManager) {
 
         composable(Routes.HOME) {
             val vm: HomeViewModel = hiltViewModel()
+            val user by vm.user.collectAsState()
             HomeScreen(
+                user = user,
                 onGoUsers = { navController.navigate(Routes.USERS) },
                 onGoProfile = { navController.navigate(Routes.PROFILE) },
                 onGoCartelera = { navController.navigate(Routes.CARTELERA) },

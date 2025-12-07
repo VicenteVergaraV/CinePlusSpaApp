@@ -13,6 +13,7 @@ data class UsuarioProfileDto(
 
     val nombre: String? = null,
     val telefono: String? = null,
+    val avatar: String? = null,
 
     // Por si el backend agrega estos campos (típicos en Mongoose)
     val createdAt: String? = null,

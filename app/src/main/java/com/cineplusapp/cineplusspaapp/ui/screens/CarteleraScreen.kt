@@ -25,7 +25,7 @@ fun CarteleraScreen(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(vertical = 6.dp)
-                    .clickable { onMovieClick(m.id.toInt()) }
+                    .clickable { onMovieClick(m.numericId) }
             ) {
                 Column(Modifier.padding(12.dp)) {
                     Text(m.titulo, style = MaterialTheme.typography.titleMedium)

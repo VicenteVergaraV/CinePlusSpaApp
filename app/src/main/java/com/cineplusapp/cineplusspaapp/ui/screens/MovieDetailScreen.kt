@@ -1,4 +1,3 @@
-// ui/screens/MovieDetailScreen.kt
 package com.cineplusapp.cineplusspaapp.ui.screens
 
 import androidx.compose.foundation.layout.*
