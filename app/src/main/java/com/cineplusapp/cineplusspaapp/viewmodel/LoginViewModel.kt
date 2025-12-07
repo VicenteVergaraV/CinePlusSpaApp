@@ -17,7 +17,9 @@ import javax.inject.Inject
 
 data class LoginUi(
     val loading: Boolean = false,
-    val error: String? = null,
+    val emailError: String? = null,
+    val passwordError: String? = null,
+    val generalError: String? = null,
 )
 
 @HiltViewModel
@@ -32,22 +34,111 @@ class LoginViewModel @Inject constructor(
     private val _loginSuccess = MutableSharedFlow<AuthTokens>()
     val loginSuccess = _loginSuccess.asSharedFlow()
 
+    /**
+     * Validación local antes de llamar al backend
+     */
+    private fun validate(email: String, password: String): Boolean {
+        var valid = true
+        var emailError: String? = null
+        var passwordError: String? = null
+
+        if (email.isBlank()) {
+            emailError = "El correo es obligatorio"
+            valid = false
+        } else if (!android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
+            emailError = "Formato de correo no válido"
+            valid = false
+        }
+
+        if (password.isBlank()) {
+            passwordError = "La contraseña es obligatoria"
+            valid = false
+        } else if (password.length < 6) {
+            passwordError = "La contraseña debe tener al menos 6 caracteres"
+            valid = false
+        }
+
+        _uiState.update {
+            it.copy(
+                emailError = emailError,
+                passwordError = passwordError,
+                generalError = null // limpio error general si lo había
+            )
+        }
+
+        return valid
+    }
+
     fun login(email: String, password: String) {
+        // 1) Validación local
+        if (!validate(email, password)) return
+
         viewModelScope.launch {
-            _uiState.update { it.copy(loading = true, error = null) }
+            _uiState.update { it.copy(loading = true, generalError = null) }
+
             try {
                 val result = authRepository.login(email, password)
+
                 result.fold(
                     onSuccess = { authTokens ->
+                        // Guarda token
                         sessionManager.saveAuthToken(authTokens.access)
+
+                        // Apago spinner y limpio errores
+                        _uiState.update {
+                            it.copy(
+                                loading = false,
+                                generalError = null
+                            )
+                        }
+
+                        // Evento de éxito (para navegar)
                         _loginSuccess.emit(authTokens)
                     },
                     onFailure = { exception ->
-                        _uiState.update { it.copy(loading = false, error = exception.message) }
+                        val userMessage = mapExceptionToMessage(exception)
+
+                        _uiState.update {
+                            it.copy(
+                                loading = false,
+                                generalError = userMessage
+                            )
+                        }
                     }
                 )
             } catch (e: Exception) {
-                _uiState.update { it.copy(loading = false, error = e.message) }
+                val userMessage = mapExceptionToMessage(e)
+                _uiState.update {
+                    it.copy(
+                        loading = false,
+                        generalError = userMessage
+                    )
+                }
+            }
+        }
+    }
+
+    /**
+     * Aquí traduces excepciones técnicas a mensajes amigables para el usuario.
+     * Ajusta los tipos según lo que use tu AuthRepository.
+     */
+    private fun mapExceptionToMessage(e: Throwable): String {
+        return when (e) {
+            is java.io.IOException -> {
+                // sin conexión, timeout, etc.
+                "No se pudo conectar. Verifica tu conexión a internet."
+            }
+            is retrofit2.HttpException -> {
+                when (e.code()) {
+                    400, 401 -> "Correo o contraseña incorrectos."
+                    403 -> "No tienes permisos para acceder."
+                    500 -> "El servidor está teniendo problemas. Intenta más tarde."
+                    else -> "Ocurrió un error (${e.code()}). Intenta nuevamente."
+                }
+            }
+            else -> {
+                // Evita mostrar el .message crudo al usuario
+                "Ha ocurrido un error inesperado. Intenta nuevamente."
             }
         }
     }
