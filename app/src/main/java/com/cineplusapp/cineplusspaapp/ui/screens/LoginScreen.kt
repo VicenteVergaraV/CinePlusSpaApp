@@ -1,76 +1,149 @@
 package com.cineplusapp.cineplusspaapp.ui.screens
 
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Button
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
-import androidx.compose.material3.TextField
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.cineplusapp.cineplusspaapp.data.remote.dto.AuthTokens
-import com.cineplusapp.cineplusspaapp.viewmodel.AuthViewModel
 import com.cineplusapp.cineplusspaapp.viewmodel.LoginViewModel
 
 @Composable
 fun LoginScreen(
     onLoginSuccess: () -> Unit,
     onGoRegister: () -> Unit,
-    viewModel: AuthViewModel = hiltViewModel()
+    viewModel: LoginViewModel = hiltViewModel()
 ) {
-    val status by viewModel.status.collectAsState()
+    val uiState by viewModel.uiState.collectAsState()
 
-    var email by remember { mutableStateOf("") }
-    var password by remember { mutableStateOf("") }
+    var email by rememberSaveable { mutableStateOf("") }
+    var password by rememberSaveable { mutableStateOf("") }
 
-    // Navegar cuando el estado indique éxito
-    LaunchedEffect(status) {
-        if (status.startsWith("Sesión activa:")) {
+    // Navegar cuando el login sea exitoso (evento desde el ViewModel)
+    LaunchedEffect(Unit) {
+        viewModel.loginSuccess.collect {
             onLoginSuccess()
         }
     }
 
-    // UI de ejemplo
-    Column {
-        Text(text = status)
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(16.dp),
+        contentAlignment = Alignment.Center
+    ) {
+        Card(
+            modifier = Modifier.fillMaxWidth(),
+            elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
+        ) {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp),
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
 
-        TextField(
-            value = email,
-            onValueChange = { email = it },
-            label = { Text("Email") }
-        )
+                Text(
+                    text = "Iniciar sesión",
+                    style = MaterialTheme.typography.titleLarge
+                )
 
-        TextField(
-            value = password,
-            onValueChange = { password = it },
-            label = { Text("Contraseña") }
-        )
+                Spacer(Modifier.height(16.dp))
 
-        Button(onClick = { viewModel.login(email, password) }) {
-            Text("Iniciar sesión")
-        }
+                // Error general (backend / red / credenciales)
+                uiState.generalError?.let { msg ->
+                    Text(
+                        text = msg,
+                        color = MaterialTheme.colorScheme.error,
+                        style = MaterialTheme.typography.bodyMedium,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(bottom = 8.dp)
+                    )
+                }
 
-        TextButton(onClick = onGoRegister) {
-            Text("Registrarse")
+                // EMAIL
+                OutlinedTextField(
+                    value = email,
+                    onValueChange = {
+                        email = it
+                        // si quieres, podrías limpiar errores aquí llamando a una función del VM
+                    },
+                    label = { Text("Email") },
+                    modifier = Modifier.fillMaxWidth(),
+                    isError = uiState.emailError != null,
+                    keyboardOptions = KeyboardOptions(
+                        keyboardType = KeyboardType.Email
+                    )
+                )
+                if (uiState.emailError != null) {
+                    Text(
+                        text = uiState.emailError!!,
+                        color = MaterialTheme.colorScheme.error,
+                        style = MaterialTheme.typography.bodySmall,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(top = 2.dp)
+                    )
+                }
+
+                Spacer(Modifier.height(8.dp))
+
+                // PASSWORD
+                OutlinedTextField(
+                    value = password,
+                    onValueChange = {
+                        password = it
+                    },
+                    label = { Text("Contraseña") },
+                    modifier = Modifier.fillMaxWidth(),
+                    isError = uiState.passwordError != null,
+                    visualTransformation = PasswordVisualTransformation(),
+                    keyboardOptions = KeyboardOptions(
+                        keyboardType = KeyboardType.Password
+                    )
+                )
+                if (uiState.passwordError != null) {
+                    Text(
+                        text = uiState.passwordError!!,
+                        color = MaterialTheme.colorScheme.error,
+                        style = MaterialTheme.typography.bodySmall,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(top = 2.dp)
+                    )
+                }
+
+                Spacer(Modifier.height(16.dp))
+
+                // BOTÓN LOGIN
+                Button(
+                    onClick = { viewModel.login(email, password) },
+                    enabled = !uiState.loading,
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    if (uiState.loading) {
+                        CircularProgressIndicator(
+                            modifier = Modifier.size(18.dp),
+                            strokeWidth = 2.dp
+                        )
+                    } else {
+                        Text("Iniciar sesión")
+                    }
+                }
+
+                Spacer(Modifier.height(8.dp))
+
+                TextButton(onClick = onGoRegister) {
+                    Text("¿No tienes cuenta? Regístrate")
+                }
+            }
         }
     }
 }

@@ -1,6 +1,7 @@
 // AppNavigation.kt
 package com.cineplusapp.cineplusspaapp.ui.navigation
 
+import MovieDetailScreen
 import androidx.compose.runtime.*
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavType
@@ -74,9 +75,6 @@ fun AppNavigation(session: SessionManager) {
         composable(Routes.LOGIN) {
             LoginScreen(
                 onLoginSuccess = {
-                    // OJO: ya no necesitas pasar tokens ni guardar nada aquí.
-                    // El AuthViewModel + AuthRepository se encargan de guardar el token.
-                    // Este callback es opcional; si quieres, incluso puedes dejarlo vacío.
                 },
                 onGoRegister = { navController.navigate(Routes.REGISTER) }
             )
