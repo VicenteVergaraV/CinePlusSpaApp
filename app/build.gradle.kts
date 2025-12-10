@@ -145,7 +145,7 @@ dependencies {
     testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.9.0")
 
     // Testing MockK (mocking framework)
-    testImplementation("io.mockk:mockk:1.14.6")
+    testImplementation("io.mockk:mockk-android:1.14.6")
     androidTestImplementation("io.mockk:mockk-android:1.14.6")
 
     // Testing Turbine

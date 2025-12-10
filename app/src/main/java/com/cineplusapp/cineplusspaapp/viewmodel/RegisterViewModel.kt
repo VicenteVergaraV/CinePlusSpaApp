@@ -1,6 +1,5 @@
 package com.cineplusapp.cineplusspaapp.viewmodel
 
-import android.util.Patterns
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -31,7 +30,7 @@ class RegisterViewModel @Inject constructor(
         private set
 
     /**
-     * Limpia todos los errores (útil cuando el usuario empieza a escribir de nuevo)
+     * Limpia todos los errores para cuando el usuario escriba nuevamente
      */
     fun clearErrors() {
         ui = ui.copy(
@@ -41,6 +40,8 @@ class RegisterViewModel @Inject constructor(
             generalError = null
         )
     }
+
+    private val EMAIL_REGEX = "^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+$".toRegex()
 
     private fun validate(name: String, email: String, pass: String): Boolean {
         var nameError: String? = null
@@ -60,7 +61,7 @@ class RegisterViewModel @Inject constructor(
         if (e.isEmpty()) {
             emailError = "El correo es obligatorio."
             valid = false
-        } else if (!Patterns.EMAIL_ADDRESS.matcher(e).matches()) {
+        } else if (!EMAIL_REGEX.matches(e)) {
             emailError = "Email no válido."
             valid = false
         }
@@ -77,7 +78,7 @@ class RegisterViewModel @Inject constructor(
             nameError = nameError,
             emailError = emailError,
             passwordError = passwordError,
-            generalError = null,  // limpio error general
+            generalError = null,  // se limpia el error general
             loading = false
         )
 

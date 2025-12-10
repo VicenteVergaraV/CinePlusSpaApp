@@ -37,23 +37,28 @@ class LoginViewModel @Inject constructor(
     /**
      * Validación local antes de llamar al backend
      */
+    private val EMAIL_REGEX = "^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+$".toRegex()
+
     private fun validate(email: String, password: String): Boolean {
         var valid = true
         var emailError: String? = null
         var passwordError: String? = null
 
-        if (email.isBlank()) {
+        val e = email.trim()
+        val p = password.trim()
+
+        if (e.isBlank()) {
             emailError = "El correo es obligatorio"
             valid = false
-        } else if (!android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
+        } else if (!EMAIL_REGEX.matches(e)) {
             emailError = "Formato de correo no válido"
             valid = false
         }
 
-        if (password.isBlank()) {
+        if (p.isBlank()) {
             passwordError = "La contraseña es obligatoria"
             valid = false
-        } else if (password.length < 6) {
+        } else if (p.length < 6) {
             passwordError = "La contraseña debe tener al menos 6 caracteres"
             valid = false
         }
@@ -84,7 +89,7 @@ class LoginViewModel @Inject constructor(
                         // Guarda token
                         sessionManager.saveAuthToken(authTokens.access)
 
-                        // Apago spinner y limpio errores
+                        // Limpia errores
                         _uiState.update {
                             it.copy(
                                 loading = false,
@@ -119,8 +124,7 @@ class LoginViewModel @Inject constructor(
     }
 
     /**
-     * Aquí traduces excepciones técnicas a mensajes amigables para el usuario.
-     * Ajusta los tipos según lo que use tu AuthRepository.
+     * Aquí se traduce excepciones técnicas a mensajes amigables para el usuario.
      */
     private fun mapExceptionToMessage(e: Throwable): String {
         return when (e) {
